@@ -1,0 +1,39 @@
+.raleway-font {
+    font-family: 'Raleway', sans-serif;
+}
+
+
+#titletext{
+    padding-top: 10%;
+    padding-bottom: 10%;
+    position: relative;
+    text-align: center;
+    color : white;
+    font-size: 72pt;
+    margin:0;
+}
+
+#breadText{
+    padding: 20px;
+}
+
+#infoText {
+    align-items : center;
+    background-color: white;
+    border-radius: 25px;
+    color : black;
+
+}
+
+.bg {
+    background-image: linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%);
+    background-attachment: fixed;
+}
+
+.buttonBackground {
+
+    background: linear-gradient(to right, rgba(255,154,158,0.5), rgba(250,208,196,0.5));
+
+
+}
+
