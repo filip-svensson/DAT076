@@ -15,25 +15,87 @@
 
 #breadText{
     padding: 20px;
-}
-
-#infoText {
+    font-size: 16pt;
     align-items : center;
     background-color: white;
     border-radius: 25px;
     color : black;
+}
+
+
+
+#infoText span {
+    font-size: 24pt;
 
 }
 
-.bg {
-    background-image: linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%);
-    background-attachment: fixed;
+.bgStatic {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    height: 100vh;
 }
 
-.buttonBackground {
-
-    background: linear-gradient(to right, rgba(255,154,158,0.5), rgba(250,208,196,0.5));
-
+.bgMoving {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: bg-Gradient 15s ease infinite;
+    height: 100vh;
 
 }
 
+.button {
+    text-align: center;
+    padding: 20px;
+    border-style: solid;
+    border-color: white;
+    border-radius: 25px;
+    color: white;
+    font-size: 18pt;
+    background: none;
+    transition: all 0.5s;
+}
+
+.button:hover {
+    background-color: limegreen;
+}
+
+.button:active {
+    background-color: #1f841f;
+}
+.button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+.button span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+}
+
+.button:hover span {
+    padding-right: 25px;
+}
+
+.button:hover span:after {
+    opacity: 1;
+    right: 0;
+}
+
+@keyframes bg-Gradient {
+    0% {
+        background-position: 0% 50%;
+
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+
+    }
+}
