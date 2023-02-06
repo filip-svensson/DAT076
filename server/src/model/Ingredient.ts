@@ -6,6 +6,7 @@ export class Ingredient {
     }
 
     getName() {
+
         return this._name;
     }
 }
