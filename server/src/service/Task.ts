@@ -1,0 +1,41 @@
+import { Post } from "../model/Post";
+
+export interface PostInterface{
+
+    getAllPosts() : Promise<Post[]>;
+
+    getPost(id : number) : Promise<Post>;
+
+    newPost(author : number, title : string, recipeEntries : string[]) : Promise<Post>;
+
+}
+
+    class PostService implements PostInterface {
+
+    posts : Array<Post> = [];
+
+    async getAllPosts() : Promise<Post[]>{
+        return this.posts;
+    }
+
+    async getPost(id : number) : Promise<Post>{
+        return this.posts[id];
+    }
+
+    async newPost(author : number, title : string, recipeEntries : string[]) : Promise<Post>{
+        let newId : number;
+
+        while(true){
+            newId = Math.floor((Math.random() * 10000)+1);
+            if(!this.posts.some(Post => Post.id === newId)){
+                break;
+            }
+        }
+        const post = new Post(newId, author, title, recipeEntries);
+        this.posts.push(post);
+        return post;
+    }
+
+
+
+    }
