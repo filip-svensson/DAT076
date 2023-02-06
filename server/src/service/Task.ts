@@ -1,4 +1,5 @@
 import { Post } from "../model/Post";
+import {RecipeEntries} from "../model/RecipeEntries";
 
 export interface PostInterface{
 
@@ -6,7 +7,7 @@ export interface PostInterface{
 
     getPost(id : number) : Promise<Post>;
 
-    newPost(author : number, title : string, recipeEntries : string[]) : Promise<Post>;
+    newPost(author : number, title : string, desc: string, recipeEntries : RecipeEntries[]) : Promise<Post>;
 
 }
 
@@ -22,7 +23,7 @@ export interface PostInterface{
         return this.posts[id];
     }
 
-    async newPost(author : number, title : string, recipeEntries : string[]) : Promise<Post>{
+    async newPost(author : number, title : string, desc : string, recipeEntries : RecipeEntries[]) : Promise<Post>{
         let newId : number;
 
         while(true){
@@ -31,7 +32,7 @@ export interface PostInterface{
                 break;
             }
         }
-        const post = new Post(newId, author, title, recipeEntries);
+        const post = new Post(newId, author, title, desc, recipeEntries);
         this.posts.push(post);
         return post;
     }
