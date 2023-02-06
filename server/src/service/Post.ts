@@ -20,7 +20,7 @@ export interface PostInterface{
     }
 
     async getPost(id : number) : Promise<Post>{
-        return this.posts[id];
+        return this.posts[0];
     }
 
     async newPost(author : number, title : string, desc : string, recipeEntries : RecipeEntries[]) : Promise<Post>{
