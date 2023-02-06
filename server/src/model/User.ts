@@ -1,19 +1,32 @@
 export class User{
-    _id : number;
-    _username : string;
+     private _id : number
+     private _username : string
+     private _favoritePost : number[] | undefined
 
 
+
+    constructor(id : number, username : string, favoritePost? : number[]) {
+         this._username = username;
+         this._id = id;
+         this._favoritePost = favoritePost;
+    }
 
     get id(): number{
-        return this.id
+        return this._id
     }
     set id(value: number){
-        this.id = value
+        this._id = value
     }
     get username(): string{
-        return this.username
+        return this._username
     }
-    set username(value: String){
+    set username(value: string){
         this._username = value
+    }
+    get favoritePost(): number[] | undefined{
+         return this._favoritePost
+    }
+    set favoritePost(value : number[] | undefined){
+         this._favoritePost = value
     }
 }
