@@ -30,7 +30,7 @@ postRouter.get("/:id", async (
         }
         const index = parseInt(req.params.id, 10);
         const post = await postService.getPost(index);
-        if (post == null) {
+        if (post == undefined) {
             res.status(404).send(`No post with index ${index}`);
             return;
         }
@@ -61,7 +61,7 @@ postRouter.post("/", async (
             res.status(400).send(`Bad POST call to ${req.originalUrl} --- recipe has type ${typeof(desc)}`)
             return;
         }
-        if (typeof(recipeEntries) !== "string") {
+        if (typeof(recipeEntries) !== "object") {
             res.status(400).send(`Bad POST call to ${req.originalUrl} --- recipe has type ${typeof(recipeEntries)}`)
             return;
         }

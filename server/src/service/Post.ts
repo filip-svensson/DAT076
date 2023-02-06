@@ -5,7 +5,7 @@ export interface PostInterface{
 
     getAllPosts() : Promise<Post[]>;
 
-    getPost(id : number) : Promise<Post>;
+    getPost(id : number) : Promise<Post | undefined>;
 
     newPost(author : number, title : string, desc: string, recipeEntries : RecipeEntries[]) : Promise<Post>;
 
@@ -19,8 +19,8 @@ export interface PostInterface{
         return this.posts;
     }
 
-    async getPost(id : number) : Promise<Post>{
-        return this.posts[0];
+    async getPost(id : number) : Promise<Post | undefined>{
+        return this.posts.find(i => i.id === id);
     }
 
     async newPost(author : number, title : string, desc : string, recipeEntries : RecipeEntries[]) : Promise<Post>{
