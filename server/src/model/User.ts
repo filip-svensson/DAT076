@@ -9,6 +9,7 @@ export class User{
          this._username = username;
          this._id = id;
          this._favoritePost = favoritePost;
+
     }
 
     get id(): number{
