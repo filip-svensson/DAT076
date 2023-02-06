@@ -11,7 +11,7 @@ export interface PostInterface{
 
 }
 
-    class PostService implements PostInterface {
+    export class postService implements PostInterface {
 
     posts : Array<Post> = [];
 
@@ -39,4 +39,8 @@ export interface PostInterface{
 
 
 
+    }
+
+    export function makePostService() : postService{
+    return new postService();
     }
