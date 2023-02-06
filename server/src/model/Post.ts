@@ -1,13 +1,17 @@
+import { RecipeEntries } from "../model/RecipeEntries";
+
 export class Post{
     private _id : number;
     private _author : number;
     private _title : string;
-    private _recipeEntries : String[];
+    private _desc : string;
+    private _recipeEntries : RecipeEntries[];
 
-    constructor (id : number, author : number, title : string, recipeEntries : string[]){
+    constructor (id : number, author : number, title : string, desc : string,  recipeEntries : RecipeEntries[]){
         this._id = id;
         this._author = author;
         this._title = title;
+        this._desc = desc;
         this._recipeEntries = recipeEntries;
     }
 
@@ -27,30 +31,29 @@ export class Post{
         this._author = value;
     }
 
-    get title(): String {
+    get title(): string {
         return this._title;
     }
 
-    set title(value: String) {
+    set title(value: string) {
         this._title = value;
     }
 
-    get recipeEntries(): [] {
+    get recipeEntries(): RecipeEntries[] {
         return this._recipeEntries;
     }
 
-    set recipeEntries(value: []) {
-        this._recipeEntries = value;
+    set recipeEntries(values: RecipeEntries[]) {
+        this._recipeEntries = values;
     }
 
-    get desc(): String {
+    get desc(): string {
         return this._desc;
     }
 
-    set desc(value: String) {
+    set desc(value: string) {
         this._desc = value;
     }
 
-    private _desc : String;
 
 }
