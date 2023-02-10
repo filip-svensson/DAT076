@@ -20,21 +20,22 @@ test("End-to-end test", async () => {
     const res1 = await request.post("/Post").send({author : author, title : title, desc : desc, recipeEntries : recipe});
 
     expect(res1.statusCode).toEqual(201);
-    expect(res1.body.author).toEqual(author);
-    expect(res1.body.title).toEqual(title);
-    expect(res1.body.desc).toEqual(desc);
-    expect(res1.body.recipeEntries).toEqual(recipe);
+    expect(res1.body._author).toEqual(author);
+    expect(res1.body._title).toEqual(title);
+    expect(res1.body._desc).toEqual(desc);
+    expect(res1.body._recipeEntries).toEqual(recipe);
 
-    const newPostID = res1.body.id;
+    //Retrieve the assigned ID
+    const newPostID = res1.body._id;
 
-    //Retrieve added post
+    //Retrieve all posts and look for the one we added
     const res2 = await request.get(`/Post/${newPostID}`);
     expect(res2.statusCode).toEqual(200);
-    expect(res2.body.map((post : Post) => post.id)).toContain(newPostID);
-    expect(res2.body.map((post : Post) => post.author)).toContain(author);
-    expect(res2.body.map((post : Post) => post.title)).toContain(title);
-    expect(res2.body.map((post : Post) => post.desc)).toContain(desc);
-    expect(res2.body.map((post : Post) => post.recipeEntries)).toContain(recipe);
+    expect(res2.body._id).toEqual(newPostID);
+    expect(res2.body._author).toEqual(author);
+    expect(res2.body._title).toEqual(title);
+    expect(res2.body._desc).toEqual(desc);
+    expect(res2.body._recipeEntries).toEqual(recipe);
 
 })
 
