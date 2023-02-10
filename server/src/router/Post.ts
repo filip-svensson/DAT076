@@ -41,13 +41,14 @@ postRouter.get("/:id", async (
 })
 
 postRouter.post("/", async (
-    req : Request<{},{},{author : number, title : string, desc : string, recipeEntries : RecipeEntries[]}>, /*Might be horribly wrong*/
+    req : Request<{},{},{author : number, title : string, desc : string, recipeEntries : /*string[string]*/RecipeEntries[]}>, /*Might be horribly wrong*/
     res : Response<Post | String>
 ) => {
     const author = req.body.author;
     const title = req.body.title;
     const desc = req.body.desc;
     const recipeEntries = req.body.recipeEntries;
+
     try {
         if (typeof(author) !== "number") {
             res.status(400).send(`Bad POST call to ${req.originalUrl} --- author has type ${typeof(author)}`)

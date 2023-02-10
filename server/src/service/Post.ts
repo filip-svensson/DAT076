@@ -26,7 +26,7 @@ export interface PostInterface{
     async newPost(author : number, title : string, desc : string, recipeEntries : RecipeEntries[]) : Promise<Post>{
         let newId : number;
 
-        while(true){
+        while(true){ //Databas/user
             newId = Math.floor((Math.random() * 10000)+1);
             if(!this.posts.some(Post => Post.id === newId)){
                 break;

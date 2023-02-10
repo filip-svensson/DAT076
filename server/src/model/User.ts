@@ -1,8 +1,8 @@
 export class User{
      private _id : number
      private _username : string
-     private _favoritePost : number[] | undefined
-
+     private _favoritePost : number[] | undefined //Ta bort undefined, ersätt med tom lista
+    //TODO Add mypost
 
 
     constructor(id : number, username : string, favoritePost? : number[]) {
