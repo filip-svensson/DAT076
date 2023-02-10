@@ -5,8 +5,11 @@ export class Ingredient {
         this._name = name;
     }
 
-    getName() {
-
+    get name() {
         return this._name;
+    }
+
+    set name(name : string) {
+        this._name = name;
     }
 }
