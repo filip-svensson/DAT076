@@ -10,7 +10,7 @@ type recipeCard = {
 
 }
 
-export default function RecipeCard({name, link, image, desc} : recipeCard) {
+export default function RecipeCard({name, link, image} : recipeCard) {
   return (
     <NavLink to={`/forum/${link}`} >
       <Card 
@@ -21,10 +21,7 @@ export default function RecipeCard({name, link, image, desc} : recipeCard) {
       >
         <Card.Img className="p-2" variant="top" src={image ? require(image) : require("../assets/cocktail.png")} alt="card image" style={{width:"100%"}}/>
         <Card.Body>
-          <Card.Title>{name}</Card.Title>
-          <Card.Text>
-            {desc}
-          </Card.Text>
+          <Card.Title style={{textDecoration:"none"}}>{name}</Card.Title>
         </Card.Body>
       </Card>
     </NavLink>
