@@ -1,44 +1,82 @@
-import { NavLink } from "react-router-dom";
+import {NavLink} from "react-router-dom";
 import RecipeCard from "../components/RecipeCard"
+import {Card, Container, Nav, Navbar} from "react-bootstrap";
+import {useEffect, useState} from "react";
+import axios from "axios";
 
+export interface Ingredient {
+    _name : string,
+}
+
+export interface RecipeEntries {
+    _ingredient : Ingredient,
+    _amount : string,
+}
+
+export interface Post {
+    _id : number,
+    _author : number,
+    _title : string,
+    _desc : string,
+    _recipeEntries : RecipeEntries[],
+}
 
 export default function Forum() {
-  const recipe_cards = [
-    {
-      name : "Beer",
-      link : "/beer",
-      desc : "This is a good drink",
-      amount : 5
-    },
-    {
-      name : "Wine",
-      link : "/wine",
-      desc : "This is a bad drink",
-      amount : 0
-    },
-    {
-      name : "Vodka",
-      link : "/vodka",
-      desc : "This is an okay drink",
-      amount : 1
-    },
-  ]
-  return (
-    <div className="forum">
-      <NavLink to="/">Go back</NavLink>
-      <div className="recipe-cards">
-        {
-          recipe_cards.map(recipe => (
-            <RecipeCard 
-              key={recipe.name}
-              name={recipe.name} 
-              link={recipe.link} 
-              desc={recipe.desc} 
-              amount={recipe.amount}
-            />
-          ))
-        }
-      </div>
-    </div>
+
+
+    const [posts, setPosts] = useState<Post[]>([]);
+
+    async function updatePosts() {
+        // TODO Make it possible to change URL
+        const response = await axios.get<Post[]>("http://localhost:8080/Post");
+        setPosts(response.data);
+    }
+
+    useEffect(() => {
+        updatePosts();
+    }, []);
+
+
+    return (
+        <div className="forum bgStatic">
+            <Navbar>
+                <Container>
+                    <Navbar.Brand href="">
+                        <h1>
+                            Forum
+                        </h1></Navbar.Brand>
+                    <Nav className="me-auto">
+                        <Nav.Link href={""}>
+                            <button className="button">
+                                Login
+                            </button>
+                        </Nav.Link>
+                        <Nav.Link>
+                            <button className="button">
+                                Register
+                            </button>
+                        </Nav.Link>
+                        <Nav.Link>
+                            <button className="button">
+                                Add post
+                            </button>
+                        </Nav.Link>
+                    </Nav>
+                </Container>
+            </Navbar>
+            <NavLink to="/">Go back</NavLink>
+            <div className="recipe-cards">
+                {
+                    posts.map(post => (
+                        <RecipeCard
+                            key={post._id}
+                            name={post._title}
+                            link={post._id}
+                            desc={post._desc}
+                        />
+                    ))
+                }
+            </div>
+        </div>
     )
-  }
+}

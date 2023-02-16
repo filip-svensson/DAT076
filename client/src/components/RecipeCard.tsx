@@ -2,23 +2,24 @@ import { NavLink } from "react-router-dom";
 import { Card, Ratio } from "react-bootstrap";
 
 type recipeCard = {
+  key : number,
   name : string,
-  link : string,
+  link : number,
   image ?: string,
   desc : string,
-  amount : number
+
 }
 
-export default function RecipeCard({name, link, image, desc, amount} : recipeCard) {
+export default function RecipeCard({name, link, image, desc} : recipeCard) {
   return (
-    <NavLink to={link} >
+    <NavLink to={`/forum/${link}`} >
       <Card 
         bg="light"
         text="dark"
         className="mb-2"
         style={{ width: '8rem'}}
       >
-        <Card.Img variant="top" src={image ? require(image) : require("../assets/cocktail.png")} alt="card image" style={{width:"100%"}}/>
+        <Card.Img className="p-2" variant="top" src={image ? require(image) : require("../assets/cocktail.png")} alt="card image" style={{width:"100%"}}/>
         <Card.Body>
           <Card.Title>{name}</Card.Title>
           <Card.Text>
