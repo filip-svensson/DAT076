@@ -1,4 +1,10 @@
 
+export interface IComment {
+    id: string;
+    user: string;
+    message: string;
+    date: number;
+}
 
 export class Comment {
     id: string;

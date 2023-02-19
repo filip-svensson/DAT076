@@ -19,7 +19,6 @@ class UserService implements IUserService {
         if (this.users.some(user => user.username===username)) {
             return false;
         }
-        console.log(this.users);
         const id = uuidv4();
         this.users.push(new User(id, username, password));
         return true;
