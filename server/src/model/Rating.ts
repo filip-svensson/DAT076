@@ -1,3 +1,7 @@
+export interface IRating {
+    user : string;
+    score : number;
+}
 
 export class Rating {
     user : string;
@@ -6,5 +10,4 @@ export class Rating {
         this.user = user;
         this.score = score;
     }
-    
 }

@@ -2,34 +2,8 @@ import { Button, Form } from "react-bootstrap"
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-import Navbar from "../components/Navbar"
-
-interface IIngredient {
-  name: string
-}
-interface IRecipeEntry {
-  ingredient: IIngredient;
-  amount: string;
-}
-export interface IComment {
-  id: string;
-  user: string;
-  message: string;
-  date: number;
-}
-export interface IRating {
-  user : string;
-  score : number;
-}
-interface IPost {
-  id : string;
-  author : string;
-  title : string;
-  description : string;
-  recipeEntries : IRecipeEntry[];
-  comments : IComment[];
-  ratings : IRating[];
-}
+import Navbar from "../components/Navbar";
+import { IPost } from "../utilities/interfaces";
 
 export default function Forum() {
   const [posts, setPosts] = useState<IPost[]>([]);
@@ -37,6 +11,8 @@ export default function Forum() {
   async function updatePosts() {
     try {
       const response = await axios.get<IPost[]>("http://localhost:8080/post/all");
+      console.log(response.status);
+      console.log(response.data);
       if (response.status !== 200) return;
       setPosts(response.data);
     } catch (err: any) {
@@ -47,9 +23,7 @@ export default function Forum() {
   useEffect(() => {
     updatePosts();
   }, []);
-  function createPost() {
-    console.log(searchPhrase);
-  }
+
   return (
     <div className="bg-static-gradient" style={{minHeight:"100vh"}}>
       <Navbar/>
@@ -58,10 +32,7 @@ export default function Forum() {
         <div className="d-flex gap-3">
           <Button
             variant="outline-light"
-            onClick={e=> {
-              e.preventDefault();
-              createPost();
-            }}
+            href="/forum/create"
             className="fw-bolder"
             style={{minWidth:"8rem"}}
             >
