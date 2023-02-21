@@ -27,11 +27,19 @@ class UserService implements IUserService {
      * Looks for user with same username and password
      * @param username username to look for
      * @param password password to look for
-     * @returns the user with the matching username and password | undefined if there is one
+     * @returns the user with the matching username and password | undefined if there is no one
      */
     async findUser(username: string, password: string): Promise<User | undefined> {
         return this.users.find(user => user.username === username 
                                     && user.password === password);
+    }
+    /**
+     * Looks for a user with the given id and returns its username
+     * @param id id to look for
+     * @returns the username of the user with the given id | indefined if there is no one
+     */
+    async findUsername(id: string): Promise<string | undefined> {
+        return this.users.find(user => user.id === id)?.username;
     }
 }
 

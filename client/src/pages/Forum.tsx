@@ -4,6 +4,7 @@ import axios from "axios";
 
 import Navbar from "../components/Navbar";
 import { IPost } from "../utilities/interfaces";
+import PostCard from "../components/forum/PostCard";
 
 export default function Forum() {
   const [posts, setPosts] = useState<IPost[]>([]);
@@ -25,9 +26,8 @@ export default function Forum() {
   return (
     <div className="bg-static-gradient" style={{minHeight:"100vh"}}>
       <Navbar/>
-      <br/>
       <div className="d-flex flex-column align-items-center">
-        <div className="d-flex gap-3">
+        <div className="d-flex gap-2 my-4">
           <Button
             variant="outline-light"
             href="/forum/create"
@@ -44,20 +44,29 @@ export default function Forum() {
               e.preventDefault();
               setSearchPhrase(e.target.value);
             }}
-            className="me-2"
             style={{minWidth:"15rem"}}
             aria-label="Search"
             />
           </Form>
         </div>
-        <div className="container">
-          <div className="row row-cols-auto">
+        <div className="mx-5 mx-lg-auto">
+          <div className="row row-cols-3 row-cols-lg-5 g-2 justify-content-center">
             {posts.filter(post => {
               return searchPhrase === ""
               ? post
               : post.title.toLowerCase().includes(searchPhrase.toLowerCase());
             }).map(({id, author, title, description, recipeEntries, comments, ratings}) => (
-              <div key={id}>{title}</div>
+              <div className="col-4" key={id}>
+                <PostCard
+                  id={id}
+                  author={author}
+                  title={title}
+                  description={description}
+                  recipeEntries={recipeEntries}
+                  comments={comments}
+                  ratings={ratings}
+                />
+              </div>
             ))}
           </div>
         </div>

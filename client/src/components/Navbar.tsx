@@ -78,10 +78,10 @@ export default function Navbar () {
               Sign out
             </Nav.Link>
             :
-            <Nav.Link 
+            <Nav.Link
               key="Sign in" 
               href="/login"
-              className={`text-success ${location.pathname === "/login" ? "active" : ""}`}
+              className={"text-success"}
             >
               Sign in
             </Nav.Link>

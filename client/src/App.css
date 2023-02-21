@@ -12,17 +12,8 @@ body {
 }
 
 .active {
-  font-weight: 500;
-}
-.active::before {
-  content: "";
-  position: relative;
-  height: 0;
-  width: 0;
-  left: -.2rem;
-  border-top: .3rem solid transparent;
-  border-bottom: .3rem solid transparent;
-  border-left: .5rem solid black;
+  font-weight: 600;
+  text-decoration: underline;
 }
 
 .bg-static-gradient {

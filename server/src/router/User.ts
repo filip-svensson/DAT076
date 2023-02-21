@@ -90,3 +90,20 @@ userRouter.post("/logout", async (
         res.status(500).send(err.message);
     }
 })
+
+userRouter.get("/username/:id", async (
+    req: Request<{id: string},{},{}>,
+    res: Response<string>
+) => {
+    try {
+        const id = req.params.id
+        const username = await userService.findUsername(id);
+        if (username == null) {
+            res.status(404).send(`No user with id ${id}`);
+            return;
+        }
+        res.status(200).send(username);
+    } catch (err: any) {
+        res.status(500).send(err.message);
+    }
+})
