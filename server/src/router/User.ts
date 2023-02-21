@@ -46,7 +46,7 @@ userRouter.post("/", async (
 
 userRouter.post("/login", async (
     req: UserRequest,
-    res: Response<string>
+    res: Response<IUser | string>
 ) => {
     try {
         const {username, password} = req.body;
@@ -64,7 +64,7 @@ userRouter.post("/login", async (
             return;
         }
         req.session.user = user;
-        res.status(200).send("Logged in");
+        res.status(200).send(user);
     } catch (err: any) {
         res.status(500).send(err.message);
     }

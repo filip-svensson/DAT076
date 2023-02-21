@@ -1,9 +1,12 @@
-import { Button, Container, Form, Nav, Navbar as BNavbar } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
-
+import { useEffect, useState } from "react";
+import { Container, Nav, Navbar as BNavbar } from "react-bootstrap";
+import {IUser} from "../utilities/interfaces"
 
 
 export default function Navbar () {
+  const location = useLocation();
+  const [user, setUser] = useState<IUser>();
   const navbarItemsLeft = [
     {
       "name": "Forum",
@@ -20,7 +23,17 @@ export default function Navbar () {
       "link": "/login"
     },
   ]
-  const location = useLocation();
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("user");
+    if (loggedInUser) {
+      const foundUser = JSON.parse(loggedInUser);
+      setUser(foundUser);
+    }
+  }, []);
+  async function logout() {
+    setUser(undefined);
+    localStorage.clear();
+  }
   return (
     <BNavbar bg="light" expand="lg">
       <Container fluid>
@@ -52,17 +65,27 @@ export default function Navbar () {
             
           </Nav>
           <Nav>
-          {navbarItemsRight.map(navItem => {
-              return (
-                <Nav.Link 
-                  key={navItem.name} 
-                  href={navItem.link}
-                  className={location.pathname === navItem.link ? "active" : ""}
-                >
-                  {navItem.name}
-                </Nav.Link>
-              )
-            })}
+            {
+            user ?
+            <Nav.Link 
+              key="Sign out" 
+              onClick={e => {
+                e.preventDefault();
+                logout();
+              }}
+              className="text-danger"
+            >
+              Sign out
+            </Nav.Link>
+            :
+            <Nav.Link 
+              key="Sign in" 
+              href="/login"
+              className={`text-success ${location.pathname === "/login" ? "active" : ""}`}
+            >
+              Sign in
+            </Nav.Link>
+            }
           </Nav>
         </BNavbar.Collapse>
       </Container>

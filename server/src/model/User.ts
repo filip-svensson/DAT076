@@ -4,6 +4,7 @@ export interface IUser {
     id: string;
     username: string;
     password: string;
+    favoritePosts: Post[];
 }
 
 export class User implements IUser {

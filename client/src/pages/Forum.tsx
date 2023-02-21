@@ -11,8 +11,6 @@ export default function Forum() {
   async function updatePosts() {
     try {
       const response = await axios.get<IPost[]>("http://localhost:8080/post/all");
-      console.log(response.status);
-      console.log(response.data);
       if (response.status !== 200) return;
       setPosts(response.data);
     } catch (err: any) {

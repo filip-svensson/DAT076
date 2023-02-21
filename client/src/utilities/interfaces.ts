@@ -26,3 +26,10 @@ export interface IPost {
     comments : IComment[];
     ratings : IRating[];
 }
+
+export interface IUser {
+    id: string;
+    username: string;
+    password: string;
+    favoritePosts: IPost[];
+}

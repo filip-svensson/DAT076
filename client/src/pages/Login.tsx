@@ -12,18 +12,18 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   async function login() {
     try {
-      const response = await axios.post("http://localhost:8080/user/login", {
-        "username":username,
-        "password":password
-      });
-      console.log(response.status);
-      console.log(response.data);
+      const user = {username, password}
+      const response = await axios.post(
+        "http://localhost:8080/user/login",
+        user
+      );
+      if (response.status !== 200) return;
+      localStorage.setItem('user', JSON.stringify(response.data));
       navigate("/forum");
     } catch (err: any) {
       alert("Invalid sign in");
       console.log(`Error message: ${err.message}`)
     }
-    
   }
   return (
     <div className="bg-static-gradient d-flex flex-column" style={{minHeight:"100vh"}}>
