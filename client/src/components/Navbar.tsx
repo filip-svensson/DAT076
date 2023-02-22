@@ -2,27 +2,20 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Container, Nav, Navbar as BNavbar } from "react-bootstrap";
 import {IUser} from "../utilities/interfaces"
-
+import axios from "axios";
+ 
 
 export default function Navbar () {
   const location = useLocation();
   const [user, setUser] = useState<IUser>();
+  /*
   const navbarItemsLeft = [
     {
       "name": "Forum",
       "link": "/forum"
     },
-    {
-      "name": "About",
-      "link": "/about"
-    },
   ]
-  const navbarItemsRight = [
-    {
-      "name": "Sign in",
-      "link": "/login"
-    },
-  ]
+  */
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (loggedInUser) {
@@ -31,8 +24,13 @@ export default function Navbar () {
     }
   }, []);
   async function logout() {
-    setUser(undefined);
-    localStorage.clear();
+    try {
+      const response = await axios.post("http://localhost:8080/user/logout");
+      setUser(undefined);
+      localStorage.clear();
+    } catch (err: any) {
+      console.log(err);
+    }
   }
   return (
     <BNavbar bg="light" expand="lg">
@@ -51,23 +49,34 @@ export default function Navbar () {
             style={{ maxHeight:'10rem' }}
             navbarScroll
           >
-            {navbarItemsLeft.map(navItem => {
-              return (
-                <Nav.Link 
-                  key={navItem.name} 
-                  href={navItem.link}
-                  className={location.pathname === navItem.link ? "active" : ""}
-                >
-                  {navItem.name}
-                </Nav.Link>
-              )
-            })}
-            
+          <Nav.Link 
+            className = {location.pathname === "/forum" ? "active" : ""} 
+            key="Forum" 
+            href="/forum">Forum
+          </Nav.Link>
+          { 
+            user && 
+            <div className="d-flex"> 
+              <Nav.Link 
+              className = {location.pathname === "/myposts" ? "active" : ""} 
+              href="/myposts"
+              key="My Posts">
+                My Posts</Nav.Link>
+              <Nav.Link 
+              className = {location.pathname === "/favourites" ? "active" : ""} 
+              key="My Favourites" 
+              href="/favourites">
+                My Favourites</Nav.Link>
+            </div>
+          }
           </Nav>
-          <Nav>
+          
             {
-            user ?
-            <Nav.Link 
+            user ? 
+            (
+            <Nav>
+            <span className="navbar-text">Signed in as: <strong>{user.username}</strong></span>
+            <Nav.Link
               key="Sign out" 
               onClick={e => {
                 e.preventDefault();
@@ -77,7 +86,10 @@ export default function Navbar () {
             >
               Sign out
             </Nav.Link>
+            </Nav>
+            )
             :
+            <Nav>
             <Nav.Link
               key="Sign in" 
               href="/login"
@@ -85,10 +97,15 @@ export default function Navbar () {
             >
               Sign in
             </Nav.Link>
+            </Nav>
             }
-          </Nav>
+          
         </BNavbar.Collapse>
       </Container>
     </BNavbar>
     )
   }
+
+
+
+

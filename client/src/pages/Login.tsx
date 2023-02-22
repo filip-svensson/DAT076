@@ -17,7 +17,6 @@ export default function Login() {
         "http://localhost:8080/user/login",
         user
       );
-      if (response.status !== 200) return;
       localStorage.setItem('user', JSON.stringify(response.data));
       navigate("/forum");
     } catch (err: any) {

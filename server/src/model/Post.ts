@@ -4,7 +4,10 @@ import { Rating } from "./Rating";
 
 export interface IPost {
     id : string;
-    author : string;
+    author : {
+        id: string,
+        name: string
+    };
     title : string;
     description : string;
     recipeEntries : RecipeEntry[];
@@ -13,14 +16,17 @@ export interface IPost {
 }
 export class Post implements IPost {
     id : string;
-    author : string;
+    author : {
+        id: string,
+        name: string
+    };
     title : string;
     description : string;
     recipeEntries : RecipeEntry[];
     comments : Comment[];
     ratings : Rating[];
     
-    constructor (id : string, author : string, title : string, description : string, recipeEntries : RecipeEntry[]) {
+    constructor (id : string, author : {id: string, name: string}, title : string, description : string, recipeEntries : RecipeEntry[]) {
         this.id = id;
         this.author = author;
         this.title = title;

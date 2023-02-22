@@ -7,7 +7,7 @@ import { Rating } from "../model/Rating";
 
 
 export interface IPostService {
-    createPost(author: string, title: string, description: string, recipeEntries: RecipeEntry[]) : Promise<Post>;
+    createPost(author: {id: string, name: string}, title: string, description: string, recipeEntries: RecipeEntry[]) : Promise<Post>;
     getPost(id: string): Promise<Post | undefined>;
     getPosts(): Promise<Post[]>;
     getUserPosts(userID: string): Promise<Post[]>;
@@ -20,13 +20,13 @@ class PostService implements IPostService {
     posts: Array<Post> = [];
     /**
      * Creates a new post
-     * @param author author of post
+     * @param author author of post {id, name}
      * @param title title of post
      * @param description description of post
      * @param recipeEntries recipeEntries of post
      * @returns the newly created post
      */
-    async createPost(author: string, title: string, description: string, recipeEntries: RecipeEntry[]): Promise<Post> {
+    async createPost(author: {id: string, name: string}, title: string, description: string, recipeEntries: RecipeEntry[]): Promise<Post> {
         const id = uuidv4();
         const newPost = new Post(id, author, title, description, recipeEntries);
         this.posts.push(newPost);
@@ -56,7 +56,7 @@ class PostService implements IPostService {
      * @returns an array of the users post, the array will be empty if no posts are made
      */
     async getUserPosts(userID : string): Promise<Post[]> {
-        return this.posts.filter(post => post.author === userID)
+        return this.posts.filter(post => post.author.id === userID)
     }
     /**
      * Adds a comment from user with userID to post with postID

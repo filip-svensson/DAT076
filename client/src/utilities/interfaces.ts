@@ -3,7 +3,7 @@ export interface IIngredient {
 }
 export interface IRecipeEntry {
     ingredient: IIngredient;
-    amount: string;
+    amount: number;
     unit: string;
 }
 export interface IComment {
@@ -18,7 +18,7 @@ export interface IRating {
 }
 export interface IPost {
     id : string;
-    author : string;
+    author : {id: string, name: string};
     title : string;
     description : string;
     recipeEntries : IRecipeEntry[];
@@ -30,5 +30,5 @@ export interface IUser {
     id: string;
     username: string;
     password: string;
-    favoritePosts: IPost[];
+    favouritePosts: IPost[];
 }

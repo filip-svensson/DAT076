@@ -5,14 +5,16 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import { IPost } from "../utilities/interfaces";
 import PostCard from "../components/forum/PostCard";
+import { useNavigate } from "react-router-dom";
 
 export default function Forum() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState();
   const [posts, setPosts] = useState<IPost[]>([]);
   const [searchPhrase, setSearchPhrase] = useState("");
   async function updatePosts() {
     try {
       const response = await axios.get<IPost[]>("http://localhost:8080/post/all");
-      if (response.status !== 200) return;
       setPosts(response.data);
     } catch (err: any) {
       console.log(`Did you start the server? error message: ${err.message}`);
@@ -21,6 +23,11 @@ export default function Forum() {
   }
   useEffect(() => {
     updatePosts();
+    const loggedInUser = localStorage.getItem("user");
+    if (loggedInUser) {
+      const foundUser = JSON.parse(loggedInUser);
+      setUser(foundUser);
+    }
   }, []);
 
   return (
@@ -30,9 +37,12 @@ export default function Forum() {
         <div className="d-flex gap-2 my-4">
           <Button
             variant="outline-light"
-            href="/forum/create"
             className="fw-bolder"
             style={{minWidth:"8rem"}}
+            onClick={ e=> {
+              e.preventDefault();
+              user ? navigate("/forum/create") : navigate("/login");
+            }}
             >
               Create Post
           </Button>
@@ -49,7 +59,7 @@ export default function Forum() {
             />
           </Form>
         </div>
-        <div className="mx-5 mx-lg-auto">
+        <div className="w-75">
           <div className="row row-cols-3 row-cols-lg-5 g-2 justify-content-center">
             {posts.filter(post => {
               return searchPhrase === ""

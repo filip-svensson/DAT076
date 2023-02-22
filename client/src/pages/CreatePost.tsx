@@ -1,89 +1,106 @@
+import { useNavigate } from "react-router-dom";
 import { Button, Form } from "react-bootstrap";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import Navbar from "../components/Navbar";
-import { IRecipeEntry, IIngredient, IPost, ITempPost } from "../utilities/interfaces";
+import { IRecipeEntry } from "../utilities/interfaces";
+
 export default function CreatePost() {
-const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [post, setPost] = 
+    useState<{title: string, description: string, recipeEntries: IRecipeEntry[]}>
+    ({title: "", description: "", recipeEntries: []});  
+  const [recipeEntry, setRecipeEntry] = 
+    useState<IRecipeEntry>
+    ({ingredient:{name:""}, amount:0, unit:""});
 
-
-const [post, setPost] = useState<ITempPost[]>();  
-const [recipe, setRecipe] = useState<IRecipeEntry[]>([]);
-
-  function addHandler() {
-    const adder : IRecipeEntry[] = [...recipe, 
-      {
-      ingredient: { name: ""},
-      amount: "0",
-      unit: "cl"
-    }]
-    setRecipe(adder);
-  }
-  
-  function changeHandler(){ //Could do without as we dont upload until buttonpress
-
-  } 
-
-  function removeHandler(index: number){
-    const list = [...recipe];
-    list.splice(index, 1);
-    setRecipe(list)
-  }
-
-  async function createHandler(){
-    const create = await axios.post<ITempPost[]>("http://localhost:8080/post/", {
-    title : post{title},
-    description : post{description},
-    recipeEntries : recipe
-    });
-
-    try{if (create.status !== 201) return;
+  async function  createPost() {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/post",
+        post
+      );
       navigate("/forum");
     } catch (err: any) {
+      alert(`Invalid post request: ${err.message}`);
       console.log(`Error message: ${err.message}`)
     }
   }
-  
-  return(
-      <div className="bg-static-gradient d-flex flex-column" style={{minHeight:"100vh"}}>
-        <Navbar/>
-        <div className="container d-flex justify-content-center align-items-center flex-fill">  
-    
-        <Form className="d-flex flex-column gap-2"> 
-              <Form.Control type="file" style={{minWidth:"100vh", minHeight:"30vh"}}></Form.Control> 
-                            <Form.Label className="fw-bold text-color-orange">Add a picture of your nice drink above!</Form.Label>
-             
-                <Form.Control type="text" placeholder="Name of your Drink!" style={{maxWidth:"13rem"}} aria-label="Name of your drink!" onChange={e => {
-          e.preventDefault();
-          setPost({...post, title : e.target.value});
-        }}></Form.Control>
-                <Form.Control type="text" placeholder="Description" style={{ minHeight:"4rem"}} aria-label="Description"></Form.Control>
-           
-              {recipe.map((addIngredient, index) => (
-              <Form className="form-group row" key={index}>
-                <div className="col-sm-6">  
-                  <input type="string" className="form-control" placeholder="Ingredient"
-               /**onChange= yadda yadda     */></input>
-                </div>
-                <div className="col-sm-3">
-                  <input type="number" className="form-control" placeholder="Amount"
-               /**onChange= yadda yadda     */></input>
-                </div>
-                <div className="col-sm-2">
-                  <input type="string" className="form-control" placeholder="Unit"
-              /**onChange= yadda yadda     */></input>
-                </div> 
-                <Button className="col-sm-1" variant="danger" onClick={() => removeHandler(index)}>X</Button>
-              </Form>
-              ))}
-            <Button variant="outline-dark" onClick={addHandler}>Add Ingredient</Button>
-  
-            <Button variant="outline-light" onClick={createHandler}>Post your drink!</Button>
-          </Form>
-        </div>
-      </div>
-    )
-    }
 
+  function handleRemoveIngredient(index:number) {
+    const updatedEntries = post.recipeEntries
+    updatedEntries.splice(index,1)
+    setPost(prevPost => ({...prevPost, recipeEntries: updatedEntries}))
+  }
+  return(
+    <div className="bg-static-gradient d-flex flex-column" style={{minHeight:"100vh"}}>
+      <Navbar/>
+      <Form className="container my-5 d-flex flex-column gap-2">
+        <Form.Label className="text-white m-0 mt-2">Upload a picture of your drink</Form.Label>
+        <Form.Control type="file" accept="image/png" onChange={e => {
+          e.preventDefault();
+        }}/>
+        <Form.Label className="text-white m-0 mt-2">Title</Form.Label>
+        <Form.Control type="text" placeholder="Title" onChange={e => {
+          e.preventDefault();
+          setPost(prevPost => ({...prevPost, title: e.target.value}))
+        }}/>
+        <Form.Label className="text-white m-0 mt-2">Description</Form.Label>
+        <Form.Control as="textarea" placeholder="Description" rows = {4} onChange={e=> {
+          e.preventDefault();
+          setPost(prevPost => ({...prevPost, description: e.target.value}))
+        }}/>
+        <Form.Label className="text-white m-0 mt-2">Ingredients</Form.Label>
+        <ul className="d-flex flex-column gap-2">
+          {post.recipeEntries.map((entry, index) => {
+            const {ingredient, amount, unit} = entry;
+            return (
+              <li className="d-flex justify-content-between mx-5 p-1 rounded bg-white text-black" key={`${index}${ingredient.name}`}>
+                <p className="align-self-center m-0 ps-3">{`${ingredient.name} - ${amount} ${unit}`}</p>
+                <Button variant="danger" onClick={e => {
+                  e.preventDefault();
+                  handleRemoveIngredient(index);
+                }}>X</Button>
+              </li>
+            )
+          })}
+        </ul>
+
+        <Form.Group className="d-flex gap-3">
+          <Form.Control type="text" placeholder="Ingredient" onChange={e => {
+            e.preventDefault();
+            setRecipeEntry(prevRecipeEntry => 
+              ({...prevRecipeEntry, ingredient: {name: e.target.value}}))
+          }}/>
+          <Form.Control type="number" placeholder="Amount" onChange={e => {
+            e.preventDefault();
+            setRecipeEntry(prevRecipeEntry => 
+              ({...prevRecipeEntry, amount: parseFloat(e.target.value)}))
+          }}/>
+          <Form.Control type="text" placeholder="Unit (e.g. cl)" onChange={e => {
+            e.preventDefault();
+            setRecipeEntry(prevRecipeEntry => 
+              ({...prevRecipeEntry, unit: e.target.value}))
+          }}/>
+          <Button
+            className=""
+            onClick={e => {
+              e.preventDefault();
+              if (recipeEntry.ingredient.name === "") {
+                return;
+              }
+              setPost(prevPost => ({...prevPost, recipeEntries: [...prevPost.recipeEntries, recipeEntry]}))
+            }}
+          >
+            Add
+          </Button>
+        </Form.Group>
+        <Button type="submit" className="mt-5" onClick={e => {
+          e.preventDefault();
+          createPost();
+        }}>Create post</Button>
+      </Form>
+    </div>
+  )
+}

@@ -10,6 +10,8 @@ import About from './pages/About';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import BadURL from './pages/BadURL';
+import UserFavourites from './pages/UserFavourites'; 
+import UserPosts from './pages/UserPosts'
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
       <Route path="/about" element={<About/>}/>
       <Route path="/login" element={<Login/>}/>
       <Route path="/register" element={<Register/>}/>
+      <Route path="/favourites" element={<UserFavourites/>}/>
+      <Route path="/myposts" element={<UserPosts/>}/>
       <Route path="/*" element={<BadURL/>}/>
     </Routes>
   )
