@@ -38,7 +38,7 @@ export default function Navbar () {
     <BNavbar bg="light" expand="lg">
       <Container fluid>
         <BNavbar.Brand 
-          href="#" 
+          href="/" 
           className="fw-bold fs-4 bg-static-gradient" 
           style={{backgroundClip:"text",WebkitBackgroundClip:"text", color:"transparent"}}
           >

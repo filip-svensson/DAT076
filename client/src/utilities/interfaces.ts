@@ -1,11 +1,10 @@
-
-
 export interface IIngredient {
     name: string
 }
 export interface IRecipeEntry {
     ingredient: IIngredient;
     amount: string;
+    unit: string;
 }
 export interface IComment {
     id: string;
