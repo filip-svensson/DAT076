@@ -5,16 +5,10 @@ import Navbar from './Navbar';
 
 beforeEach(() => {
     render(
-        /** This didn't work
         <BrowserRouter>
-            <Router>
-                <Route path='/' element={<Navbar/>}/>
-            </Router>
-        </BrowserRouter> 
-        */
-        <Navbar/>
+            <Navbar/>
+        </BrowserRouter>
     );
-    // Wrap in router somehow
 })
 
 test("renders Navbar component", ()=>{
