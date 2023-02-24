@@ -1,6 +1,5 @@
 import './App.css';
-import React from 'react';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 import Home from "./pages/Home"
 import Forum from './pages/Forum';
@@ -15,18 +14,20 @@ import UserPosts from './pages/UserPosts'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home/>}/>
-      <Route path="/forum" element={<Forum/>}/>
-      <Route path="/forum/create" element={<CreatePost/>}/>
-      <Route path="/forum/post/:id" element={<Post/>}/>
-      <Route path="/about" element={<About/>}/>
-      <Route path="/login" element={<Login/>}/>
-      <Route path="/register" element={<Register/>}/>
-      <Route path="/favourites" element={<UserFavourites/>}/>
-      <Route path="/myposts" element={<UserPosts/>}/>
-      <Route path="/*" element={<BadURL/>}/>
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/forum" element={<Forum/>}/>
+        <Route path="/forum/create" element={<CreatePost/>}/>
+        <Route path="/forum/post/:id" element={<Post/>}/>
+        <Route path="/about" element={<About/>}/>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/register" element={<Register/>}/>
+        <Route path="/favourites" element={<UserFavourites/>}/>
+        <Route path="/myposts" element={<UserPosts/>}/>
+        <Route path="/*" element={<BadURL/>}/>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
