@@ -3,14 +3,14 @@ export interface IComment {
     id: string;
     user: string;
     message: string;
-    date: number;
+    date: Number;
 }
 
 export class Comment {
     id: string;
     user: string;
     message: string;
-    date: number;
+    date: Number;
 
     constructor (id : string, user : string, message : string) {
         this.id = id;

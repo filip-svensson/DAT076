@@ -49,8 +49,7 @@ postRouter.post("/", async (
             res.status(400).send(`Bad POST call to ${req.originalUrl} --- recipeEntries has type ${typeof(recipeEntries)}`)
             return;
         }
-        const author = {"id":user.id, "name":user.username}
-        const newPost = await postService.createPost(author,title, description, recipeEntries);
+        const newPost = await postService.createPost(user.id, title, description, recipeEntries);
         res.status(201).send(newPost);
     } catch (err: any) {
         res.status(500).send(err.message);

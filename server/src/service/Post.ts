@@ -1,16 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { Post } from "../model/Post";
+import { IPost, Post } from "../model/Post";
 import { RecipeEntry } from "../model/RecipeEntry";
 import { Comment } from "../model/Comment";
 import { Rating } from "../model/Rating";
+import { postModel } from '../../db/Post.db';
+import { ingredientModel } from '../../db/Ingredient.db';
 
 
-export interface IPostService {
-    createPost(author: {id: string, name: string}, title: string, description: string, recipeEntries: RecipeEntry[]) : Promise<Post>;
-    getPost(id: string): Promise<Post | undefined>;
-    getPosts(): Promise<Post[]>;
-    getUserPosts(userID: string): Promise<Post[]>;
+interface IPostService {
+    createPost(author: string, title: string, description: string, recipeEntries: RecipeEntry[]) : Promise<IPost>;
+    getPost(id: string): Promise<IPost | undefined>;
+    getPosts(): Promise<IPost[]>;
+    getUserPosts(userID: string): Promise<IPost[]>;
     addComment(postID: string, userID: string, message: string): Promise<boolean>;
     addRating(postID: string, userID: string, rating: number): Promise<boolean>;
     changeRating(postID: string, userID: string, rating: number): Promise<boolean>;
@@ -26,8 +28,18 @@ class PostService implements IPostService {
      * @param recipeEntries recipeEntries of post
      * @returns the newly created post
      */
-    async createPost(author: {id: string, name: string}, title: string, description: string, recipeEntries: RecipeEntry[]): Promise<Post> {
+    async createPost(author: string, title: string, description: string, recipeEntries: RecipeEntry[]): Promise<IPost> {
         const id = uuidv4();
+        const dbresponse = await postModel.create({
+            id : id, 
+            author: author,
+            title: title,
+            description: description,
+            recipeEntries: recipeEntries,
+            comments: [],
+            ratings: []
+        });
+        console.log(dbresponse);
         const newPost = new Post(id, author, title, description, recipeEntries);
         this.posts.push(newPost);
         return newPost;
@@ -38,15 +50,15 @@ class PostService implements IPostService {
      * @param postID the post's ID 
      * @returns the post or undefined if it doesn't exists
      */
-    async getPost(postID: string): Promise<Post | undefined> {
-        const post : Post | undefined = this.posts.find(post => post.id === postID);
+    async getPost(postID: string): Promise<IPost | undefined> {
+        const post : IPost | undefined = this.posts.find(post => post.id === postID);
         return post;
     }
     /**
      * Gets all posts
      * @returns an array with posts, the array will be empty if no posts are made
      */
-    async getPosts(): Promise<Post[]> {
+    async getPosts(): Promise<IPost[]> {
         return this.posts;
     }
     
@@ -55,8 +67,8 @@ class PostService implements IPostService {
      * @param userID The id of the user
      * @returns an array of the users post, the array will be empty if no posts are made
      */
-    async getUserPosts(userID : string): Promise<Post[]> {
-        return this.posts.filter(post => post.author.id === userID)
+    async getUserPosts(userID : string): Promise<IPost[]> {
+        return this.posts.filter(post => post.author === userID)
     }
     /**
      * Adds a comment from user with userID to post with postID
@@ -66,7 +78,7 @@ class PostService implements IPostService {
      * @returns true if the comment was added correctly | false if it was not added correctly
      */
     async addComment(postID: string, userID: string, message: string): Promise<boolean> {
-        const newCommentPost = this.posts.find(post => post.id === postID);
+        const newCommentPost : Post | undefined= this.posts.find(post => post.id === postID);
         if (newCommentPost == null) {return false;}
         const id = uuidv4();
         newCommentPost.addComment(new Comment(id, userID, message));

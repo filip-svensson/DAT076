@@ -3,33 +3,38 @@ import { useEffect, useState } from "react";
 import { Card, Container, ListGroup } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { IPost, IUser, IRecipeEntry } from "../utilities/interfaces";
+import { IPost } from "../utilities/interfaces";
 import BadURL from "./BadURL";
-
 
 export default function Post() {
   const { id } = useParams();
-  const [user, setUser] = useState<IUser>();
   const [post, setPost] = useState<IPost>();
+  const [authorName, setAuthorName] = useState<string>();
 
   async function getPost() {
     try {
       const response = await axios.get(`http://localhost:8080/post/${id}`)
       setPost(response.data)
     } catch (err: any) {
-      console.log(`Error message: ${err.message}`)
+      console.log(`Error message: ${err.message}`);
     }
   }
-  
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem("user");
-    if (loggedInUser) {
-      const foundUser = JSON.parse(loggedInUser);
-      setUser(foundUser);
+  async function getAuthorName() {
+    if (post == null) { setAuthorName("Unavailable"); return; }
+    try {
+      const response = await axios.get(`http://localhost:8080/user/username/${post.author}`)
+      setAuthorName(response.data);
+    } catch (err: any) {
+      console.log(`Error message: ${err.message}`);
     }
+  }
+  useEffect(() => {
     getPost();
   }, []);
-  if (post == null) {    // If post doesn't exist
+  useEffect(() => {
+    getAuthorName();
+  }, [post]);
+  if (post == null) {    // If post doesn't exist iz no good
     return (
       <BadURL/>
     )
@@ -42,7 +47,7 @@ export default function Post() {
           <Card.Img/>
           <Card.Body>
             <Card.Title>{post?.title}</Card.Title>
-            <Card.Subtitle>{`Written by ${post.author.name}`}</Card.Subtitle>
+            <Card.Subtitle>{`Written by ${authorName}`}</Card.Subtitle>
             <Card.Text>{post?.description}</Card.Text>
             <ListGroup variant="list-group-flush">
               {

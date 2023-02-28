@@ -18,7 +18,7 @@ export interface IRating {
 }
 export interface IPost {
     id : string;
-    author : {id: string, name: string};
+    author : string;
     title : string;
     description : string;
     recipeEntries : IRecipeEntry[];
