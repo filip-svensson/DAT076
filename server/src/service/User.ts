@@ -1,14 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
+import { userModel } from '../../db/User.db';
 
-import { User } from "../model/User";
+import { IUser, User } from "../model/User";
 
 export interface IUserService {
     createUser(username: string, password: string): Promise<boolean>;
-    findUser(username: string, password: string): Promise<User | undefined>;
+    findUser(username: string, password: string): Promise<IUser | null>;
 }
 
 class UserService implements IUserService {
-    users: Array<User> = [];
+    
     /**
      * Creates a new user
      * @param username username of user
@@ -16,12 +17,25 @@ class UserService implements IUserService {
      * @returns true if user created successfully | false if something went wrong (user already exist)
      */
     async createUser(username: string, password: string): Promise<boolean> {
-        if (this.users.some(user => user.username===username)) {
+       
+        
+        const exists = await userModel.findOne({username : username});
+        if(exists){
             return false;
         }
+        
         const id = uuidv4();
-        this.users.push(new User(id, username, password));
+        const res = await userModel.create({
+            id : id,
+            username : username,
+            password : password,
+            favouritePosts : [],
+        }, function(err : any){
+            if(err){return false;}
+            return true;
+        });
         return true;
+        
     }
     /**
      * Looks for user with same username and password
@@ -29,9 +43,9 @@ class UserService implements IUserService {
      * @param password password to look for
      * @returns the user with the matching username and password | undefined if there is no one
      */
-    async findUser(username: string, password: string): Promise<User | undefined> {
-        return this.users.find(user => user.username === username 
-                                    && user.password === password);
+    async findUser(username: string, password: string): Promise<IUser | null> {
+        const user : IUser | null = await userModel.findOne({username:username});
+        return user;
     }
     /**
      * Looks for a user with the given id and returns its username
@@ -39,7 +53,8 @@ class UserService implements IUserService {
      * @returns the username of the user with the given id | indefined if there is no one
      */
     async findUsername(id: string): Promise<string | undefined> {
-        return this.users.find(user => user.id === id)?.username;
+        const user : IUser | null = await userModel.findOne({id:id});
+        return user?.username;
     }
 }
 

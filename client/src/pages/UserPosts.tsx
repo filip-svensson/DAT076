@@ -34,7 +34,7 @@ export default function UserPosts() {
   return (
     <div className="bg-static-gradient" style={{minHeight:"100vh"}}>
       <Navbar/>
-      <div className="w-75">
+      <div className="w-75 gap-2 my-4">
         <div className="row row-cols-3 row-cols-lg-5 g-2 justify-content-center">
           {posts.map(({id, author, title, description, recipeEntries, comments, ratings}) => (
             <div className="col-4" key={id}>

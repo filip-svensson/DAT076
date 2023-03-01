@@ -8,16 +8,21 @@ const postSchema : Schema = new Schema({
     title : String,
     description : String,
     recipeEntries : [{
-        type : Schema.Types.ObjectId,
-        ref : 'RecipeEntry',
+        ingredient : {
+            name : String,
+        },
+        amount : String,
+        unit : String,  
     }],
     comments : [{
-        type : Schema.Types.ObjectId,
-        ref : 'Comment',
+        id : String,
+        user : String,
+        message : String,
+        date : Number,
     }],
     ratings : [{
-        type : Schema.Types.ObjectId,
-        ref : 'Rating'
+        user : String,
+        score : Number,
     }],
 });
 

@@ -51,4 +51,5 @@ export class Post implements IPost {
     addRating(rating : Rating){
         this.ratings.push(rating);
     }
+
 }

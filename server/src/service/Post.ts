@@ -3,23 +3,24 @@ import { v4 as uuidv4 } from 'uuid';
 import { IPost, Post } from "../model/Post";
 import { RecipeEntry } from "../model/RecipeEntry";
 import { Comment } from "../model/Comment";
-import { Rating } from "../model/Rating";
+import { IRating, Rating } from "../model/Rating";
 import { postModel } from '../../db/Post.db';
 import { ingredientModel } from '../../db/Ingredient.db';
 
 
 interface IPostService {
     createPost(author: string, title: string, description: string, recipeEntries: RecipeEntry[]) : Promise<IPost>;
-    getPost(id: string): Promise<IPost | undefined>;
+    getPost(id: string): Promise<IPost | null>;
     getPosts(): Promise<IPost[]>;
     getUserPosts(userID: string): Promise<IPost[]>;
     addComment(postID: string, userID: string, message: string): Promise<boolean>;
     addRating(postID: string, userID: string, rating: number): Promise<boolean>;
     changeRating(postID: string, userID: string, rating: number): Promise<boolean>;
+    getRating(postID: string, userID: string): Promise<Rating | null>;
 }
 
 class PostService implements IPostService {
-    posts: Array<Post> = [];
+    
     /**
      * Creates a new post
      * @param author author of post {id, name}
@@ -30,7 +31,7 @@ class PostService implements IPostService {
      */
     async createPost(author: string, title: string, description: string, recipeEntries: RecipeEntry[]): Promise<IPost> {
         const id = uuidv4();
-        const dbresponse = await postModel.create({
+        const newPost = await postModel.create({
             id : id, 
             author: author,
             title: title,
@@ -39,9 +40,6 @@ class PostService implements IPostService {
             comments: [],
             ratings: []
         });
-        console.log(dbresponse);
-        const newPost = new Post(id, author, title, description, recipeEntries);
-        this.posts.push(newPost);
         return newPost;
     }
     
@@ -50,8 +48,8 @@ class PostService implements IPostService {
      * @param postID the post's ID 
      * @returns the post or undefined if it doesn't exists
      */
-    async getPost(postID: string): Promise<IPost | undefined> {
-        const post : IPost | undefined = this.posts.find(post => post.id === postID);
+    async getPost(postID: string): Promise<IPost | null> {
+        const post : IPost | null = await postModel.findOne({"id":postID});
         return post;
     }
     /**
@@ -59,7 +57,7 @@ class PostService implements IPostService {
      * @returns an array with posts, the array will be empty if no posts are made
      */
     async getPosts(): Promise<IPost[]> {
-        return this.posts;
+        return await postModel.find();
     }
     
     /**
@@ -68,7 +66,7 @@ class PostService implements IPostService {
      * @returns an array of the users post, the array will be empty if no posts are made
      */
     async getUserPosts(userID : string): Promise<IPost[]> {
-        return this.posts.filter(post => post.author === userID)
+        return await postModel.find({"author":userID});
     }
     /**
      * Adds a comment from user with userID to post with postID
@@ -78,11 +76,15 @@ class PostService implements IPostService {
      * @returns true if the comment was added correctly | false if it was not added correctly
      */
     async addComment(postID: string, userID: string, message: string): Promise<boolean> {
-        const newCommentPost : Post | undefined= this.posts.find(post => post.id === postID);
-        if (newCommentPost == null) {return false;}
+        const post : Post | null = await postModel.findOne({"id":postID});
+        if (post == null) {return false;}
         const id = uuidv4();
-        newCommentPost.addComment(new Comment(id, userID, message));
-        return true;
+        post.addComment(new Comment(id, userID, message));
+        await postModel.findOneAndUpdate({"id":postID}, post, function(err : any, _ : any) {
+            if (err) return false;
+            return true;
+        });
+        return false;
     }
     /**
      * Adds a rating from user with userID to post with postID
@@ -92,10 +94,14 @@ class PostService implements IPostService {
      * @returns true if the rating was added correctly | false if the post did not exist
      */
     async addRating(postID: string, userID: string, rating: number): Promise<boolean> {
-        const newRatingPost = this.posts.find(post => post.id === postID);
-        if (newRatingPost == null) {return false;}
-        newRatingPost.addRating(new Rating(userID, rating));
-        return true;
+        const post : Post | null = await postModel.findOne({"id":postID});
+        if (post == null) {return false;}
+        post.addRating(new Rating(userID, rating));
+        await postModel.findOneAndUpdate({"id":postID}, post, {upsert : true}, function(err : any, _ : any) {
+            if (err) return false;
+            return true;
+        });
+        return false;
     }
     /**
      * Changes the rating from user with userID in post with postID
@@ -105,10 +111,11 @@ class PostService implements IPostService {
      * @returns true if the rating was changed correctly | false if post or rating did not exist
      */
     async changeRating(postID: string, userID: string, rating: number): Promise<boolean> {
-        const userRating = await this.getRating(postID, userID);
-        if(userRating == null) { return false;}
-        userRating.score = rating;
-        return true;
+        await postModel.findOneAndUpdate({"id":postID, "ratings" : { "user" : userID }}, {"score" : rating} , function(err : any, _ : any) {
+            if (err) return false;
+            return true;
+        });
+        return false;
     }
     /**
      * Gets rating with specified post and user ID
@@ -116,9 +123,9 @@ class PostService implements IPostService {
      * @param userID the user ID
      * @returns returns the rating if it exists, undefined if it can not be found
      */
-    async getRating(postID: string, userID: string): Promise<Rating | undefined> {
-        const post = this.posts.find(post => post.id === postID);
-        return post?.ratings.find(rating => rating.user === userID);
+    async getRating(postID: string, userID: string): Promise<Rating | null> {
+        const rating : IRating | null = await postModel.findOne({"id":postID, "ratings" : {"user" : userID}});
+        return rating;
     }
 
 }
