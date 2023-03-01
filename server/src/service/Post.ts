@@ -111,7 +111,7 @@ class PostService implements IPostService {
      * @returns true if the rating was changed correctly | false if post or rating did not exist
      */
     async changeRating(postID: string, userID: string, rating: number): Promise<boolean> {
-        await postModel.findOneAndUpdate({"id":postID, "ratings" : { "user" : userID }}, {"score" : rating} , function(err : any, _ : any) {
+        await postModel.findOneAndUpdate({"id":postID, "ratings" : { "user" : userID }}, { $set : {"score" : rating}} , function(err : any, _ : any) {
             if (err) return false;
             return true;
         });
