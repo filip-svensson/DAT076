@@ -43,17 +43,20 @@ export default function Post() {
     <div className="bg-static-gradient d-flex flex-column" style={{minHeight:"100vh"}}>
       <Navbar/>
       <Container>
-        <Card className="mt-5" style={{minHeight:"50vh"}}>
+        <Card className="my-5" style={{minHeight:"50vh"}}>
           <Card.Img/>
           <Card.Body>
             <Card.Title>{post?.title}</Card.Title>
-            <Card.Subtitle>{`Written by ${authorName}`}</Card.Subtitle>
+            <Card.Subtitle className="mb-3">{`Written by ${authorName}`}</Card.Subtitle>
             <Card.Text>{post?.description}</Card.Text>
             <ListGroup variant="list-group-flush">
               {
                 post.recipeEntries.map((postEntry, index) => {
                   return (
-                    <ListGroup.Item key={index}>{`${postEntry.ingredient.name} --- ${postEntry.amount} ${postEntry.unit}`}</ListGroup.Item>
+                    <ListGroup.Item className="d-flex justify-content-between px-lg-4 px-md-4 px-2" key={index}>
+                      <span className="px-1">{postEntry.ingredient.name}</span>
+                      <span className="px-1">{`${postEntry.amount} ${postEntry.unit}`}</span>
+                    </ListGroup.Item>
                   )
                 })
               }
