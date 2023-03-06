@@ -13,7 +13,7 @@ export const postRouter = express.Router();
 
 
 // Request interface for Post
-type PostRequest = Request & {
+export type PostRequest = Request & {
     body: {
         title: string,
         description: string,
@@ -87,7 +87,7 @@ postRouter.post("/comment", async (
             return;
         }
         const postWithNewComment = await postService.addComment(postID, user.id, message);
-        if (!postWithNewComment) {
+        if (postWithNewComment == null) {
             res.status(404).send(`No post with index ${postID}`);
             return;
         }

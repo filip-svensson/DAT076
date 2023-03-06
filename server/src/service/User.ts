@@ -4,8 +4,9 @@ import { userModel } from '../../db/User.db';
 import { IUser, User } from "../model/User";
 
 export interface IUserService {
-    createUser(username: string, password: string): Promise<boolean>;
+    createUser(username: string, password: string, id ?: string): Promise<boolean>;
     findUser(username: string, password: string): Promise<IUser | null>;
+    findUsername(id: string): Promise<string | undefined>;
 }
 
 class UserService implements IUserService {
@@ -16,7 +17,7 @@ class UserService implements IUserService {
      * @param password password of user
      * @returns true if user created successfully | false if something went wrong (user already exist)
      */
-    async createUser(username: string, password: string): Promise<boolean> {
+    async createUser(username: string, password: string, ID : string | undefined): Promise<boolean> {
        
         
         const exists = await userModel.findOne({username : username});
@@ -24,7 +25,11 @@ class UserService implements IUserService {
             return false;
         }
         
-        const id = uuidv4();
+        var id : string = uuidv4();
+        if(ID == "test"){ //For testing purposes
+        id = ID}
+
+
         const res = await userModel.create({
             id : id,
             username : username,

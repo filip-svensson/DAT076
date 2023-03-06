@@ -33,7 +33,7 @@ userRouter.post("/", async (
             return;
         }
         // TODO: Requirements for username and password (length, characters, etc..)
-        const newUser = await userService.createUser(username, password);
+        const newUser = await userService.createUser(username, password, "");
         if (!newUser) {
             res.status(409).send(`User with username ${username} already exists`);
             return;
