@@ -1,7 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Card, Container, ListGroup } from "react-bootstrap";
+import { Card, Container, ListGroup, Button, Form, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
+
+
 import Navbar from "../components/Navbar";
 import { IPost } from "../utilities/interfaces";
 import BadURL from "./BadURL";
@@ -10,6 +12,8 @@ export default function Post() {
   const { id } = useParams();
   const [post, setPost] = useState<IPost>();
   const [authorName, setAuthorName] = useState<string>();
+  const [newComment, setNewComment] = useState<string>();
+  const [rating, setRating] = useState<Number>(0);
 
   async function getPost() {
     try {
@@ -62,6 +66,32 @@ export default function Post() {
               }
             </ListGroup>
           </Card.Body>
+        </Card>
+      </Container>
+      <Container>
+        <Card>
+        <Form className="container my-1 d-flex flex-column gap-2">
+          <Form.Label className="my-auto">Leave a review:</Form.Label>
+          <Form.Control as="textarea" placeholder="Comment..." rows = {2} onChange={e=> {
+          e.preventDefault();
+          setNewComment(e.target.value);
+        }}/>
+        <Row>
+          {//ADD RATING
+          }
+          <Button onClick={//TODO HANDLE
+          ()=>{}}>
+            Submit
+          </Button>
+        </Row>
+        </Form>
+
+      
+        </Card>
+      </Container>
+      <Container>
+        <Card className="my-1">
+        <Card.Title className="p-2">Comments</Card.Title>
         </Card>
       </Container>
     </div>
