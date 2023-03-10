@@ -14,16 +14,12 @@ const postSchema : Schema = new Schema({
         amount : String,
         unit : String,  
     }],
-    comments : [{
-        id : String,
-        user : String,
-        message : String,
+    reviews : [{
+        userID : String,
+        comment : String,
+        rating : Number,
         date : Number,
-    }],
-    ratings : [{
-        user : String,
-        score : Number,
-    }],
+    }]
 });
 
 export const postModel = conn.model<IPost>("Post", postSchema);

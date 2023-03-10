@@ -55,10 +55,11 @@ postRouter.post("/", async (
         res.status(500).send(err.message);
     }
 })
-type CommentRequest = Request & {
+type ReviewRequest = Request & {
     body: {
         postID: string,
-        message: string
+        comment: string
+        rating: number
     }
     session: {
         user ?: IUser
@@ -67,122 +68,51 @@ type CommentRequest = Request & {
 /**
  * Post request for a new comment on a post with specified ID
  */
-postRouter.post("/comment", async (
-    req: CommentRequest,
+postRouter.post("/review", async (
+    req: ReviewRequest,
     res: Response<string>
 ) => {
     try {
-        const {postID, message} = req.body;
+        const {postID, comment, rating} = req.body;
+
         const user = req.session.user;
         if (user == null) {
             res.status(401).send("Not logged in");
             return;
         }
         if (typeof(postID) !== "string") {
-            res.status(400).send(`Bad POST call to ${req.originalUrl} --- postID has type ${typeof(postID)}`)
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- postID has type ${typeof(postID)}`);
             return;
         }
-        if (typeof(message) !== "string") {
-            res.status(400).send(`Bad POST call to ${req.originalUrl} --- message has type ${typeof(message)}`)
-            return;
-        }
-        const postWithNewComment = await postService.addComment(postID, user.id, message);
-        if (postWithNewComment == null) {
-            res.status(404).send(`No post with index ${postID}`);
-            return;
-        }
-        res.status(201).send(`Comment added to post ${postID}`)
-    } catch (err: any) {
-        res.status(500).send(err.message);
-    }
-})
-type RatingRequest = Request & {
-    body: {
-        postID: string,
-        rating: number
-    }
-    session: {
-        user ?: IUser
-    }
-    
-}
-/**
- * Post request for a new rating on a post with specified ID
- */
-postRouter.post("/rating", async (
-    req: RatingRequest,
-    res: Response<string>
-) => {
-    try {
-        const {postID, rating} = req.body;
-        const user = req.session.user;
-        if (user == null) {
-            res.status(401).send("Not logged in");
-            return;
-        }
-        if (typeof(postID) !== "string") {
-            res.status(400).send(`Bad POST call to ${req.originalUrl} --- postID has type ${typeof(postID)}`)
+        if (typeof(comment) !== "string") {
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- message has type ${typeof(comment)}`);
             return;
         }
         if (typeof(rating) !== "number") {
-            res.status(400).send(`Bad POST call to ${req.originalUrl} --- message has type ${typeof(rating)}`)
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- rating has type ${typeof(rating)}`);
             return;
         }
         if(![1,2,3,4,5].includes(rating)){
-            res.status(400).send(`Bad POST call to ${req.originalUrl} --- rating ${rating} is not one of [1,2,3,4,5]`)
-            return;
-        }
-        const alreadyRated = await postService.getRating(postID, user.id);
-        if(alreadyRated != null) {
-            res.status(409).send(`User already rated postID: (${postID}), to change rating use PUT method.`);
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- rating ${rating} is not one of [1,2,3,4,5]`);
             return;
         }
 
-        const postWithNewRating = await postService.addRating(postID, user.id, rating);
-        if (!postWithNewRating) {
+        const alreadyReviewed = await postService.findReview(postID, user.id);
+        if(alreadyReviewed){
+            res.status(409).send(`Bad POST call to ${req.originalUrl} --- user already reviewed this post`);
+            return;
+        }
+
+        const postWithNewReview = await postService.addReview(postID, user.id, comment, rating);
+        if (postWithNewReview == null) {
             res.status(404).send(`No post with index ${postID}`);
             return;
         }
-        res.status(201).send(`Rating added to post ${postID}`);
+        res.status(201).send(`Review added to post ${postID}`)
     } catch (err: any) {
         res.status(500).send(err.message);
     }
 })
-
-postRouter.put("/rating", async (
-    req: RatingRequest,
-    res: Response<string>
-) => {
-    try {
-        const {postID, rating} = req.body;
-        const user = req.session.user;
-        if (user == null) {
-            res.status(401).send("Not logged in");
-            return;
-        }
-        if (typeof(postID) !== "string") {
-            res.status(400).send(`Bad PUT call to ${req.originalUrl} --- postID has type ${typeof(postID)}`)
-            return;
-        }
-        if (typeof(rating) !== "number") {
-            res.status(400).send(`Bad PUT call to ${req.originalUrl} --- message has type ${typeof(rating)}`)
-            return;
-        }
-        if(![1,2,3,4,5].includes(rating)){
-            res.status(400).send(`Bad PUT call to ${req.originalUrl} --- rating ${rating} is not in [1,2,3,4,5]`)
-            return;
-        }
-        const ratingChanged = await postService.changeRating(postID, user.id, rating);
-        if(!ratingChanged){
-            res.status(404).send(`Post or rating not found with post ID ${postID}`);
-            return;
-        }
-        res.status(201).send(`Rating updated for post ${postID}`);
-    } catch (err: any) {
-        res.status(500).send(err.message);
-    }
-})
-
 
 
 

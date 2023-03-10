@@ -4,7 +4,7 @@ import axios from "axios";
 
 import Navbar from "../components/Navbar";
 import { IPost } from "../utilities/interfaces";
-import PostCard from "../components/forum/PostCard";
+import PostCard from "../components/PostCard";
 import { useNavigate } from "react-router-dom";
 
 export default function Forum() {
@@ -65,7 +65,7 @@ export default function Forum() {
               return searchPhrase === ""
               ? post
               : post.title.toLowerCase().includes(searchPhrase.toLowerCase());
-            }).map(({id, author, title, description, recipeEntries, comments, ratings}) => (
+            }).map(({id, author, title, description, recipeEntries, reviews}) => (
               <div className="col-4" key={id}>
                 <PostCard
                   id={id}
@@ -73,8 +73,7 @@ export default function Forum() {
                   title={title}
                   description={description}
                   recipeEntries={recipeEntries}
-                  comments={comments}
-                  ratings={ratings}
+                  reviews={reviews}
                 />
               </div>
             ))}

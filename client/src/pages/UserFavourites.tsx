@@ -1,6 +1,6 @@
 
 import Navbar from '../components/Navbar';
-import PostCard from '../components/forum/PostCard';
+import PostCard from '../components/PostCard';
 import {IPost, IUser} from '../utilities/interfaces';
 import axios from 'axios';
 import { useEffect, useState } from 'react';

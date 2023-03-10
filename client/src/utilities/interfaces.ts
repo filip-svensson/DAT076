@@ -6,15 +6,11 @@ export interface IRecipeEntry {
     amount: number;
     unit: string;
 }
-export interface IComment {
-    id: string;
-    user: string;
-    message: string;
+export interface IReview {
+    userID: string;
+    comment: string;
+    rating: number;
     date: number;
-}
-export interface IRating {
-    user : string;
-    score : number;
 }
 export interface IPost {
     id : string;
@@ -22,8 +18,7 @@ export interface IPost {
     title : string;
     description : string;
     recipeEntries : IRecipeEntry[];
-    comments : IComment[];
-    ratings : IRating[];
+    reviews : IReview[];
 }
 
 export interface IUser {

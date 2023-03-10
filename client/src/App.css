@@ -13,7 +13,6 @@ body {
 
 .active {
   font-weight: 600;
-  text-decoration: underline;
 }
 
 .bg-static-gradient {

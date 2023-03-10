@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { Card, Container, ListGroup, Button, Form, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 
-
+import Rating from '@mui/material/Rating';
 import Navbar from "../components/Navbar";
+import ReviewCard from "../components/ReviewCard";
 import { IPost } from "../utilities/interfaces";
 import BadURL from "./BadURL";
 
@@ -12,8 +13,8 @@ export default function Post() {
   const { id } = useParams();
   const [post, setPost] = useState<IPost>();
   const [authorName, setAuthorName] = useState<string>();
-  const [newComment, setNewComment] = useState<string>();
-  const [rating, setRating] = useState<Number>(0);
+  const [newComment, setNewComment] = useState<string>("");
+  const [rating, setRating] = useState<number | null>();
 
   async function getPost() {
     try {
@@ -34,6 +35,7 @@ export default function Post() {
   }
   useEffect(() => {
     getPost();
+    
   }, []);
   useEffect(() => {
     getAuthorName();
@@ -43,8 +45,23 @@ export default function Post() {
       <BadURL/>
     )
   }
+
+
+  async function trySubmit(){
+    try {
+      const review = {postID: id, comment : newComment, rating : rating};
+      const response = axios.post(
+        "http://localhost:8080/post/review",
+          review
+      )
+    } catch (error : any) {
+      console.log(error.message);
+    }
+  }
+
+
   return (
-    <div className="bg-static-gradient d-flex flex-column" style={{minHeight:"100vh"}}>
+    <div className="bg-static-gradient d-flex flex-column gap-2" style={{minHeight:"100vh"}}>
       <Navbar/>
       <Container>
         <Card className="my-5" style={{minHeight:"50vh"}}>
@@ -70,30 +87,63 @@ export default function Post() {
       </Container>
       <Container>
         <Card>
-        <Form className="container my-1 d-flex flex-column gap-2">
+        <Form 
+          onSubmit={ async (e) => {
+            e.preventDefault();
+            if (rating == null) {alert("Rating required."); return;}
+            trySubmit();
+          }}
+          className="container my-1 d-flex flex-column gap-2"
+        >
           <Form.Label className="my-auto">Leave a review:</Form.Label>
-          <Form.Control as="textarea" placeholder="Comment..." rows = {2} onChange={e=> {
+          <Rating 
+            name="simple-controlled" 
+            className="align-self-start"
+            value={undefined}
+            precision={1}
+            onChange={(e, newRating) => {
+              setRating(newRating);
+            }}
+          />
+          <Form.Control as="textarea" placeholder="Comment... (Optional)" rows = {2} onChange={e=> {
           e.preventDefault();
           setNewComment(e.target.value);
         }}/>
-        <Row>
-          {//ADD RATING
-          }
-          <Button onClick={//TODO HANDLE
-          ()=>{}}>
-            Submit
-          </Button>
-        </Row>
+  
+        <Button 
+          className="align-self-end"
+          type="submit"
+        >
+          Submit
+        </Button>
+        
         </Form>
 
-      
+         
         </Card>
       </Container>
-      <Container>
-        <Card className="my-1">
-        <Card.Title className="p-2">Comments</Card.Title>
+      <Container className="my-2">
+        <Card>
+        <Card.Title className="p-2 my-auto">Reviews</Card.Title>
+        {
+          post.reviews.length === 0 ?
+          <Card.Text className="pb-2 mx-auto">This post has no reviews.</Card.Text>
+          :
+          <div className="p-2 d-flex flex-column gap-2">
+            {post.reviews.map((review) => (
+              <ReviewCard 
+                key={review.userID}
+                userID={review.userID}
+                comment={review.comment}
+                rating={review.rating}
+                date={review.date}
+              />
+            ))}
+          </div>
+        }
         </Card>
       </Container>
+
     </div>
   )
 }

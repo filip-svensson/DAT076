@@ -1,6 +1,5 @@
-import { RecipeEntry } from "./RecipeEntry"
-import { Comment } from "./Comment"
-import { Rating } from "./Rating";
+import { RecipeEntry } from "./RecipeEntry";
+import { Review } from "./Review";
 
 export interface IPost {
     id : string;
@@ -8,17 +7,17 @@ export interface IPost {
     title : string;
     description : string;
     recipeEntries : RecipeEntry[];
-    comments : Comment[];
-    ratings : Rating[];
+    reviews : Review[];
 }
+
 export class Post implements IPost {
     id : string;
     author : string;
     title : string;
     description : string;
     recipeEntries : RecipeEntry[];
-    comments : Comment[];
-    ratings : Rating[];
+    reviews : Review[];
+
     
     constructor (id : string, author : string, title : string, description : string, recipeEntries : RecipeEntry[]) {
         this.id = id;
@@ -26,30 +25,6 @@ export class Post implements IPost {
         this.title = title;
         this.description = description;
         this.recipeEntries = recipeEntries;
-        this.comments = [];
-        this.ratings = [];
+        this.reviews = [];
     }
-    /**
-     * Adds a comment to Post
-     * @param comment comment to add to Post
-     */
-    addComment(comment : Comment) {
-        this.comments.push(comment);
-    }
-    /**
-     * Removes a comment to Post
-     * @param commentID ID of comment to remove
-     */
-    removeComment(commentID : string) {
-        this.comments = this.comments.filter(comment => comment.id !== commentID)
-    }
-    
-    /**
-     * Adds a rating to the Post
-     * @param rating
-     */
-    addRating(rating : Rating){
-        this.ratings.push(rating);
-    }
-
 }

@@ -2,10 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { IPost, Post } from "../model/Post";
 import { RecipeEntry } from "../model/RecipeEntry";
-import { Comment } from "../model/Comment";
-import { IRating, Rating } from "../model/Rating";
 import { postModel } from '../../db/Post.db';
 import { ingredientModel } from '../../db/Ingredient.db';
+import { Review } from '../model/Review';
 
 
 interface IPostService {
@@ -13,10 +12,9 @@ interface IPostService {
     getPost(id: string): Promise<IPost | null>;
     getPosts(): Promise<IPost[]>;
     getUserPosts(userID: string): Promise<IPost[]>;
-    addComment(postID: string, userID: string, message: string): Promise<boolean>;
-    addRating(postID: string, userID: string, rating: number): Promise<boolean>;
-    changeRating(postID: string, userID: string, rating: number): Promise<boolean>;
-    getRating(postID: string, userID: string): Promise<Rating | null>;
+    addReview(postID: string, userID: string, comment: string, rating: number): Promise<boolean>;
+    removeReview(postID: string, userID: string): Promise<Boolean>;
+    findReview(postID: string, userID: string): Promise<Boolean>;
 }
 
 class PostService implements IPostService {
@@ -37,8 +35,7 @@ class PostService implements IPostService {
             title: title,
             description: description,
             recipeEntries: recipeEntries,
-            comments: [],
-            ratings: []
+            reviews: []
         });
         return newPost;
     }
@@ -69,64 +66,48 @@ class PostService implements IPostService {
         return await postModel.find({"author":userID});
     }
     /**
-     * Adds a comment from user with userID to post with postID
-     * @param postID ID of the post the comment was posted under
-     * @param userID ID of user who posted the comment
-     * @param message message of the comment
-     * @returns true if the comment was added correctly | false if it was not added correctly
+     * Adds a users review to a post
+     * @param postID post the review is meant for
+     * @param userID user that made the review
+     * @param comment  optional comment with the rating
+     * @param rating rating, 1-5
+     * @returns true if successfully added, false if not
      */
-    async addComment(postID: string, userID: string, message: string): Promise<boolean> {
-        const post : Post | null = await postModel.findOne({"id":postID});
-        if (post == null) {return false;}
-        const id = uuidv4();
-        post.addComment(new Comment(id, userID, message));
-        await postModel.findOneAndUpdate({"id":postID}, post, function(err : any, _ : any) {
-            if (err) return false;
+    async addReview(postID: string, userID: string, comment: string, rating: number): Promise<boolean> {
+        const review = new Review(userID, comment, rating);
+        const res = await postModel.updateOne({postID:postID}, {$push : {reviews : review}})
+        if (!res.acknowledged) return false; 
+        return true;
+    }
+    
+    /**
+     * Remove a users review from a post
+     * @param postID post that contains the review
+     * @param userID user that made the review
+     * @returns true if successfully deleted, false if not
+     */
+    async removeReview(postID: string, userID: string): Promise<Boolean>{
+        const res = await postModel.updateOne({postID:postID}, {$pull : {reviews : {userID:userID}}});
+        if(res.modifiedCount == 1){
             return true;
-        });
+        }
         return false;
     }
+
     /**
-     * Adds a rating from user with userID to post with postID
-     * @param postID ID of the post the rating was meant for
-     * @param userID ID of user who rated
-     * @param rating the rating of the post from user
-     * @returns true if the rating was added correctly | false if the post did not exist
+     * Checks if a user already made a review
+     * @param postID post to check
+     * @param userID user to look for
+     * @returns true if the user made a review, false if not or if post doesnt exists
      */
-    async addRating(postID: string, userID: string, rating: number): Promise<boolean> {
-        const post : Post | null = await postModel.findOne({"id":postID});
-        if (post == null) {return false;}
-        post.addRating(new Rating(userID, rating));
-        await postModel.findOneAndUpdate({"id":postID}, post, {upsert : true}, function(err : any, _ : any) {
-            if (err) return false;
-            return true;
-        });
-        return false;
+    async findReview(postID: string, userID: string): Promise<Boolean>{
+        const res = await postModel.findOne({postID:postID, reviews:{userID:userID}});
+        console.log(`Resultat av findReview: ${res}`);
+        return true;
+
     }
-    /**
-     * Changes the rating from user with userID in post with postID
-     * @param postID the post rated
-     * @param userID the user who made the rating
-     * @param rating the new rating value
-     * @returns true if the rating was changed correctly | false if post or rating did not exist
-     */
-    async changeRating(postID: string, userID: string, rating: number): Promise<boolean> {
-        await postModel.findOneAndUpdate({"id":postID, "ratings" : { "user" : userID }}, { $set : {"score" : rating}} , function(err : any, _ : any) {
-            if (err) return false;
-            return true;
-        });
-        return false;
-    }
-    /**
-     * Gets rating with specified post and user ID
-     * @param postID the post ID
-     * @param userID the user ID
-     * @returns returns the rating if it exists, undefined if it can not be found
-     */
-    async getRating(postID: string, userID: string): Promise<Rating | null> {
-        const rating : IRating | null = await postModel.findOne({"id":postID, "ratings" : {"user" : userID}});
-        return rating;
-    }
+ 
+    
 
 }
 

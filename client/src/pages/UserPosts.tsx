@@ -1,6 +1,6 @@
 
 import Navbar from '../components/Navbar';
-import PostCard from '../components/forum/PostCard';
+import PostCard from '../components/PostCard';
 import {IPost, IUser} from '../utilities/interfaces';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -36,7 +36,7 @@ export default function UserPosts() {
       <Navbar/>
       <div className="w-75 gap-2 my-4">
         <div className="row row-cols-3 row-cols-lg-5 g-2 justify-content-center">
-          {posts.map(({id, author, title, description, recipeEntries, comments, ratings}) => (
+          {posts.map(({id, author, title, description, recipeEntries, reviews}) => (
             <div className="col-4" key={id}>
               <PostCard
                 id={id}
@@ -44,8 +44,7 @@ export default function UserPosts() {
                 title={title}
                 description={description}
                 recipeEntries={recipeEntries}
-                comments={comments}
-                ratings={ratings}
+                reviews={reviews}
               />
             </div>
           ))}
