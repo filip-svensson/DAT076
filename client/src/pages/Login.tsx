@@ -10,7 +10,7 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  async function login() {
+  async function handleSubmit() {
     try {
       const user = {username, password}
       const response = await axios.post(
@@ -19,37 +19,48 @@ export default function Login() {
       );
       localStorage.setItem('user', JSON.stringify(response.data));
       navigate("/forum");
-    } catch (err: any) {
-      alert("Invalid sign in");
-      console.log(`Error message: ${err.message}`)
+    } catch (error: any) {
+      if (error.response.status === 401) {
+        alert(error.response.data);
+      }
+      console.log(`Error message: ${error.message}`)
     }
   }
   return (
     <div className="bg-static-gradient d-flex flex-column" style={{minHeight:"100vh"}}>
       <Navbar/>
       <div className="container d-flex justify-content-center align-items-center flex-fill">
-        <Form className="d-flex flex-column gap-2">
-          <Form.Control
-          type="text"
-          placeholder="Username"
-          onChange={e => {
+        <Form 
+          className="d-flex flex-column gap-2"
+          onSubmit={e => {
             e.preventDefault();
-            setUsername(e.target.value);
+            handleSubmit();
           }}
-          className="me-2"
-          style={{minWidth:"15rem"}}
-          aria-label="Username"
+        >
+          <Form.Control
+            type="text"
+            placeholder="Username"
+            onChange={e => {
+              e.preventDefault();
+              setUsername(e.target.value);
+            }}
+            className="me-2"
+            style={{minWidth:"15rem"}}
+            aria-label="Username"
+            required
+            autoFocus
           />
           <Form.Control
-          type={showPassword ? "text":"password"}
-          placeholder="Password"
-          onChange={e => {
-            e.preventDefault();
-            setPassword(e.target.value);
-          }}
-          className="me-2"
-          style={{minWidth:"15rem"}}
-          aria-label="Password"
+            type={showPassword ? "text":"password"}
+            placeholder="Password"
+            onChange={e => {
+              e.preventDefault();
+              setPassword(e.target.value);
+            }}
+            className="me-2"
+            style={{minWidth:"15rem"}}
+            aria-label="Password"
+            required
           />
           <Form.Check 
             className="text-white"
@@ -60,10 +71,7 @@ export default function Login() {
           }}/>
           <Button
             variant="outline-light"
-            onClick={e => {
-              e.preventDefault();
-              login();
-            }}
+            type="submit"
           >
             Sign in
           </Button>

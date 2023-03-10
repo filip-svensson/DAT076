@@ -50,7 +50,7 @@ export default function Post() {
   async function trySubmit(){
     try {
       const review = {postID: id, comment : newComment, rating : rating};
-      const response = axios.post(
+      const response = await axios.post(
         "http://localhost:8080/post/review",
           review
       )
