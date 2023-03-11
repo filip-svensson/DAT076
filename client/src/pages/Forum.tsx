@@ -28,7 +28,6 @@ export default function Forum() {
       setUser(foundUser);
     }
   }, []);
-
   return (
     <div className="bg-static-gradient" style={{minHeight:"100vh"}}>
       <Navbar/>

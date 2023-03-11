@@ -2,6 +2,7 @@ import express, {Request, Response} from "express";
 import { makeUserService } from "../service/User";
 
 import { IUser } from "../model/User";
+import { IPost } from "../model/Post";
 
 
 const userService = makeUserService();
@@ -45,40 +46,8 @@ userRouter.post("/", async (
 })
 
 
-type UserFavoriteRequest = Request & {
-    body: {
-        postID : string
-    }
-    session: {
-        user ?: IUser
-    }
-}
 
-userRouter.post("/favourite", async (
-    req : UserFavoriteRequest,
-    res: Response<string>
-) => {
-    try {
-        const {postID} = req.body;
-        const user = req.session.user;
 
-        if (user == null) {
-            res.status(401).send("Not logged in");
-            return;
-        }
-        if (typeof(postID) !== "string") {
-            res.status(400).send(`Bad POST call to ${req.originalUrl} --- postID has type ${typeof(postID)}`);
-            return;
-        }
-        
-        const result = await userService.addUserFavourites(user, postID);
-        res.status(200).send("Favourite maybe added");
-        //TODO FIX
-
-    } catch (err : any){
-        res.status(500).send(err.message);
-    }
-})
 
 userRouter.post("/login", async (
     req: UserRequest,
@@ -141,6 +110,71 @@ userRouter.get("/username/:id", async (
         }
         res.status(200).send(username);
     } catch (err: any) {
+        res.status(500).send(err.message);
+    }
+})
+
+type UserFavoritePostRequest = Request & {
+    body: {
+        postID : string
+    }
+    session: {
+        user ?: IUser
+    }
+}
+
+userRouter.post("/favourite", async (
+    req : UserFavoritePostRequest,
+    res: Response<string>
+) => {
+    try {
+        const {postID} = req.body;
+        const user = req.session.user;
+
+        if (user == null) {
+            res.status(401).send("Not logged in");
+            return;
+        }
+        if (typeof(postID) !== "string") {
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- postID has type ${typeof(postID)}`);
+            return;
+        }
+        const result = await userService.addUserFavourites(user._id.toString(), postID);
+        res.status(200).send("Favourite maybe added");
+        //TODO FIX
+
+    } catch (err : any){
+        res.status(500).send(err.message);
+    }
+})
+type UserFavoriteGetRequest = Request & {
+    body: {
+        postID : string
+    }
+    session: {
+        user ?: IUser
+    }
+}
+userRouter.get("/favourite", async (
+    req : UserFavoriteGetRequest,
+    res: Response<IPost[] | string>
+) => {
+    try {
+        const user = req.session.user;
+
+        if (user == null) {
+            res.status(401).send("Not logged in");
+            return;
+        }
+        const favouritePosts = await userService.getUserFavourites(user._id.toString());
+        if (favouritePosts == null) {
+            res.status(404).send(`Bad GET call to ${req.originalUrl} --- no favourite posts`);
+            return;
+        }
+        res.status(200).send(favouritePosts);
+        //TODO FIX
+
+    } catch (err : any){
         res.status(500).send(err.message);
     }
 })

@@ -2,14 +2,13 @@ import { ObjectId } from "mongoose";
 
 
 export interface IReview {
-    userID: string;
+    userID: ObjectId;
     comment: string;
     rating: number;
     date: number;
 }
 
 export class Review {
-
     userID: ObjectId;
     comment: string;
     rating: number;

@@ -1,15 +1,15 @@
-import { ObjectId, Schema } from "mongoose";
+import { ObjectId } from "mongoose";
 import { Post } from "./Post";
 
 export interface IUser {
-    _id: Schema.Types.ObjectId;
+    _id: ObjectId;
     username: string;
     password: string;
     favouritePosts: ObjectId[];
 }
 
 export class User implements IUser {
-    _id: Schema.Types.ObjectId;
+    _id: ObjectId;
     username: string;
     password: string;
     favouritePosts: ObjectId[];

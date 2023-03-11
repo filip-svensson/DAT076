@@ -18,7 +18,10 @@ export default function Post() {
   const [newComment, setNewComment] = useState<string>("");
   const [rating, setRating] = useState<number | null>();
   const [user, setUser] = useState<IUser>();
-  
+
+  console.log("--- CONSOLE LOG IN POST ---");
+  console.log(user);
+
   async function getPost() {
     try {
       const response = await axios.get(`http://localhost:8080/post/${id}`)
@@ -148,7 +151,6 @@ export default function Post() {
   }
   async function addFavourite() {
     if (post == null) return;
-    console.log(post._id);
     try {
       const response = await axios.post(
         "http://localhost:8080/user/favourite",
@@ -159,7 +161,14 @@ export default function Post() {
     }
   }
   async function removeFavourite() {
-
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/user/favourite"
+      )
+      console.log(response.data)
+    } catch (error: any) {
+      console.log(error.message);
+    }
   }
 
   return (
@@ -174,8 +183,11 @@ export default function Post() {
               <Rating className="mx-2" name="avgRating" value={averageReviews()} precision={0.1} readOnly/>
               <span>({totalReviews})</span>
               { <div className="ms-auto">
-                {user?.favouritePosts.find(favouritePost => favouritePost._id === post?._id) ?
-                  <div>Favourite</div>
+                {/* {user?.favouritePosts.find(favouritePost => favouritePost._id === post?._id) */ true ? 
+                  <button onClick={ async (e) => {
+                    e.preventDefault();
+                    removeFavourite();
+                  }}>Favourite</button>
                   :
                   <button onClick={ async (e) => {
                     e.preventDefault();

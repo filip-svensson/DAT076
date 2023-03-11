@@ -1,5 +1,8 @@
+import { ObjectId } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
+import { postModel } from '../../db/Post.db';
 import { userModel } from '../../db/User.db';
+import { IPost } from '../model/Post';
 
 import { IUser, User } from "../model/User";
 
@@ -7,7 +10,9 @@ export interface IUserService {
     createUser(username: string, password: string, id ?: string): Promise<boolean>;
     findUser(username: string, password: string): Promise<IUser | null>;
     findUsername(id: string): Promise<string | undefined>;
+    addUserFavourites(userID : string, postID : string): Promise<boolean>
 }
+
 
 class UserService implements IUserService {
     
@@ -54,9 +59,22 @@ class UserService implements IUserService {
         return user?.username;
     }
 
-    async addUserFavourites(user : IUser, postID : String){
-        const response = await userModel.findOneAndUpdate({_id : user._id}, {$push : {favouritePosts : {postID : new Object(postID)}}});
-        console.log(response);
+    /**
+     * Adds a new favourite post to the user
+     * @param user user of the new favourite to add to
+     * @param postID ID of the post being added to favourites of user
+     * @returns true if a new favourite was added, false if nothing was changed
+     */
+    async addUserFavourites(userID : string, postID : string): Promise<boolean> {
+        const response = await userModel.updateOne({_id: userID}, {$addToSet : {favouritePosts : postID}});
+        if (response.modifiedCount === 0) return false;
+        return true;
+    }
+
+    async getUserFavourites(userID : string): Promise<IPost[] | null> {
+        const favourites = await userModel.findById(userID, "favouritePosts");
+        const favouritePosts : IPost[] | null = await postModel.findById(favourites);
+        return favouritePosts;
     }
    
 

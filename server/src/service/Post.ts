@@ -15,9 +15,9 @@ interface IPostService {
     getPost(id: string): Promise<IPost | null>;
     getPosts(): Promise<IPost[]>;
     getUserPosts(userID: string): Promise<IPost[]>;
-    addReview(postID: string, userID: Schema.Types.ObjectId, comment: string, rating: number): Promise<boolean>;
-    removeReview(postID: string, userID: Schema.Types.ObjectId): Promise<Boolean>;
-    findReview(postID: string, userID: Schema.Types.ObjectId): Promise<Boolean>;
+    addReview(postID: string, userID: string, comment: string, rating: number): Promise<boolean>;
+    removeReview(postID: string, userID: string): Promise<Boolean>;
+    findReview(postID: string, userID: string): Promise<Boolean>;
 }
 
 class PostService implements IPostService {
@@ -86,8 +86,8 @@ class PostService implements IPostService {
      * @param rating rating, 1-5
      * @returns true if successfully added, false if not
      */
-    async addReview(postID: string, userID: Schema.Types.ObjectId, comment: string, rating: number): Promise<boolean> {
-        const review = new Review(userID, comment, rating);
+    async addReview(postID: string, userID: string, comment: string, rating: number): Promise<boolean> {
+        const review = new Review(new ObjectId(userID), comment, rating);
         const res = await postModel.updateOne({_id:postID}, {$push : {reviews : review}})
         if (!res.acknowledged) return false; 
         return true;
@@ -99,7 +99,7 @@ class PostService implements IPostService {
      * @param userID user that made the review
      * @returns true if successfully deleted, false if not
      */
-    async removeReview(postID: string, userID: Schema.Types.ObjectId): Promise<Boolean>{
+    async removeReview(postID: string, userID: string): Promise<Boolean>{
         const res = await postModel.updateOne({_id:postID}, {$pull : {reviews : {userID:userID}}});
         if(res.modifiedCount == 1){
             return true;
@@ -113,7 +113,7 @@ class PostService implements IPostService {
      * @param userID user to look for
      * @returns true if the user made a review, false if not or if post doesnt exists
      */
-    async findReview(postID: string, userID: Schema.Types.ObjectId): Promise<Boolean>{
+    async findReview(postID: string, userID: string): Promise<Boolean>{
         const res = await postModel.findOne({_id:postID, reviews:{$elemMatch: {userID:userID}}});
         if(res == null){
             return false;
