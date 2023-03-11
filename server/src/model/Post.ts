@@ -1,9 +1,10 @@
 import { RecipeEntry } from "./RecipeEntry";
 import { Review } from "./Review";
+import { ObjectId } from "mongoose";
 
 export interface IPost {
-    id : string;
-    author : string;
+    _id : ObjectId;
+    author : ObjectId;
     title : string;
     description : string;
     recipeEntries : RecipeEntry[];
@@ -11,16 +12,16 @@ export interface IPost {
 }
 
 export class Post implements IPost {
-    id : string;
-    author : string;
+    _id : ObjectId;
+    author : ObjectId;
     title : string;
     description : string;
     recipeEntries : RecipeEntry[];
     reviews : Review[];
 
     
-    constructor (id : string, author : string, title : string, description : string, recipeEntries : RecipeEntry[]) {
-        this.id = id;
+    constructor (_id : ObjectId, author : ObjectId, title : string, description : string, recipeEntries : RecipeEntry[]) {
+        this._id = _id;
         this.author = author;
         this.title = title;
         this.description = description;

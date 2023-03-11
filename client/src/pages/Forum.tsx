@@ -19,7 +19,6 @@ export default function Forum() {
     } catch (err: any) {
       console.log(`Did you start the server? error message: ${err.message}`);
     }
-    
   }
   useEffect(() => {
     updatePosts();
@@ -65,10 +64,10 @@ export default function Forum() {
               return searchPhrase === ""
               ? post
               : post.title.toLowerCase().includes(searchPhrase.toLowerCase());
-            }).map(({id, author, title, description, recipeEntries, reviews}) => (
-              <div className="col-4" key={id}>
+            }).map(({_id, author, title, description, recipeEntries, reviews} : IPost) => (
+              <div className="col-4" key={_id}>
                 <PostCard
-                  id={id}
+                  _id={_id}
                   author={author}
                   title={title}
                   description={description}

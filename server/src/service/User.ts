@@ -18,20 +18,12 @@ class UserService implements IUserService {
      * @returns true if user created successfully | false if something went wrong (user already exist)
      */
     async createUser(username: string, password: string, ID : string | undefined): Promise<boolean> {
-       
-        
         const exists = await userModel.findOne({username : username});
         if(exists){
             return false;
         }
         
-        var id : string = uuidv4();
-        if(ID == "test"){ //For testing purposes
-        id = ID}
-
-
         const res = await userModel.create({
-            id : id,
             username : username,
             password : password,
             favouritePosts : [],
@@ -58,9 +50,16 @@ class UserService implements IUserService {
      * @returns the username of the user with the given id | indefined if there is no one
      */
     async findUsername(id: string): Promise<string | undefined> {
-        const user : IUser | null = await userModel.findOne({id:id});
+        const user : IUser | null = await userModel.findOne({_id:id});
         return user?.username;
     }
+
+    async addUserFavourites(user : IUser, postID : String){
+        const response = await userModel.findOneAndUpdate({_id : user._id}, {$push : {favouritePosts : {postID : new Object(postID)}}});
+        console.log(response);
+    }
+   
+
 }
 
 export function makeUserService(): UserService {

@@ -13,7 +13,7 @@ export default function UserPosts() {
   async function fetchPosts() {
     if (user == null) return; // maybe do something else here
     try {
-      const response = await axios.get<IPost[]>(`http://localhost:8080/post/all/user/${user.id}`); 
+      const response = await axios.get<IPost[]>(`http://localhost:8080/post/all/user/${user._id}`); 
       setPosts(response.data);
       console.log(response.data);
     } catch (err: any) {
@@ -36,10 +36,10 @@ export default function UserPosts() {
       <Navbar/>
       <div className="w-75 gap-2 my-4">
         <div className="row row-cols-3 row-cols-lg-5 g-2 justify-content-center">
-          {posts.map(({id, author, title, description, recipeEntries, reviews}) => (
-            <div className="col-4" key={id}>
+          {posts.map(({_id, author, title, description, recipeEntries, reviews}) => (
+            <div className="col-4" key={_id}>
               <PostCard
-                id={id}
+                _id={_id}
                 author={author}
                 title={title}
                 description={description}

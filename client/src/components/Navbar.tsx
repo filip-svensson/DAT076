@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Container, Nav, Navbar as BNavbar } from "react-bootstrap";
 import {IUser} from "../utilities/interfaces"
@@ -6,6 +6,7 @@ import axios from "axios";
  
 
 export default function Navbar () {
+  const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<IUser>();
   /*
@@ -28,6 +29,7 @@ export default function Navbar () {
       const response = await axios.post("http://localhost:8080/user/logout");
       setUser(undefined);
       localStorage.clear();
+      navigate("/");
     } catch (err: any) {
       console.log(err);
     }

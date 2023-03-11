@@ -3,8 +3,11 @@ import {conn} from "./conn";
 import { IPost } from "../src/model/Post"
 
 const postSchema : Schema = new Schema({
-    id : String,
-    author : String,
+    author : {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    },
     title : String,
     description : String,
     recipeEntries : [{
@@ -15,7 +18,11 @@ const postSchema : Schema = new Schema({
         unit : String,  
     }],
     reviews : [{
-        userID : String,
+        userID : {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: 'User'
+        },
         comment : String,
         rating : Number,
         date : Number,

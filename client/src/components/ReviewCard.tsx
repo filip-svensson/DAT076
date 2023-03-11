@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { IReviewCard, IUser } from '../utilities/interfaces';
 
 
-export default function ReviewCard({postID, userID, comment, rating, date} : IReviewCard) {
+export default function ReviewCard({userID, comment, rating, date} : IReviewCard) {
 
     const [author, setAuthor] = useState<string>("Not available");
     const createdDate = new Date(date).toLocaleString();

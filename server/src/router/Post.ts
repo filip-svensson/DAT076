@@ -5,7 +5,6 @@ import { makeUserService } from "../service/User";
 import { IPost } from "../model/Post"
 import { IRecipeEntry } from "../model/RecipeEntry";
 import { IUser } from "../model/User";
-import { IncomingHttpHeaders } from "http";
 
 const postService = makePostService();
 const userService = makeUserService();
@@ -48,9 +47,9 @@ postRouter.post("/", async (
         }
         if (typeof(recipeEntries) !== "object") {
             res.status(400).send(`Bad POST call to ${req.originalUrl} --- recipeEntries has type ${typeof(recipeEntries)}`)
-            return;
+            return; 
         }
-        const newPost = await postService.createPost(user.id, title, description, recipeEntries);
+        const newPost = await postService.createPost(user._id.toString(), title, description, recipeEntries);
         res.status(201).send(newPost);
     } catch (err: any) {
         res.status(500).send(err.message);
@@ -98,13 +97,13 @@ postRouter.post("/review", async (
             return;
         }
 
-        const alreadyReviewed = await postService.findReview(postID, user.id);
+        const alreadyReviewed = await postService.findReview(postID, user._id);
         if(alreadyReviewed){
             res.status(409).send(`Bad POST call to ${req.originalUrl} --- user already reviewed this post`);
             return;
         }
 
-        const postWithNewReview = await postService.addReview(postID, user.id, comment, rating);
+        const postWithNewReview = await postService.addReview(postID, user._id, comment, rating);
         if (postWithNewReview == null) {
             res.status(404).send(`No post with index ${postID}`);
             return;
@@ -143,59 +142,49 @@ postRouter.delete("/review", async (
             res.status(400).send(`Bad DELETE call to ${req.originalUrl} --- postID has type ${typeof(postID)}`);
             return;
         }
-        const hasReviewed = await postService.findReview(postID, user.id);
+        const hasReviewed = await postService.findReview(postID, user._id);
         if(!hasReviewed){
             res.status(409).send(`Bad DELETE call to ${req.originalUrl} --- user has not reviewed this post`);
             return;
         }
-        const reviewDeleted = await postService.removeReview(postID, user.id);
-        if(reviewDeleted){
-            res.status(204).send(`Review by ${user.id} has been deleted successfully.`);
+        const reviewDeleted = await postService.removeReview(postID, user._id);
+        if(!reviewDeleted){
+            res.status(500).send(`Something went wrong trying to delete the review with ${user._id}`);
             return;
         }
-        res.status(500).send(`Something went wrong trying to delete the review by ${user.id}`)
-
+        res.status(204).send(`Review by ${user._id} has been deleted successfully.`);
     } catch (err : any) {
         res.status(500).send(err.message);
     }
 })
 
 
-//TODO COMMENT
-type UserReviewed = Request & {
-    headers: {
-        postid?: string,
-    }
-    session: {
+
+
+
+type UserFavouritesRequest = Request & {
+    session : {
         user ?: IUser
     }
 }
-postRouter.get("/review", async(
-    req: UserReviewed, 
-    res: Response<String | Boolean>
+
+
+postRouter.get("/favourites", async (
+    req:  UserFavouritesRequest,
+    res:  Response<IPost[] | String>
 ) => {
     try {
-        const postID = req.headers['postid'];
         const user = req.session.user;
-
         if (user == null) {
             res.status(401).send("Not logged in");
             return;
         }
-        if (typeof(postID) !== "string") {
-            res.status(400).send(`Bad GET call to ${req.originalUrl} --- postID header has type ${typeof(postID)}`);
-            return;
-        }
-        const hasReviewed = await postService.findReview(postID, user.id);
-        res.status(200).send(hasReviewed);
-    } catch (err : any){
+        const posts = await postService.getUserFavourites(user);
+        res.status(200).send(posts);
+    } catch (err: any) {
         res.status(500).send(err.message);
     }
-});
-
-
-
-
+})
 
 /**
  * Get request for all posts
@@ -212,9 +201,10 @@ postRouter.get("/all", async (
     }
 })
 /**
- * Get request for all posts from user with specified ID
+ * Get request for all posts from user with specified ID 
+ * TODO MAYBE ADD REQ SESSION
  */
-postRouter.get("/all/user/:id", async (
+postRouter.get("/all/user/:id/", async (
     req: Request<{id: string},{},{}>,
     res: Response<IPost[]>
 ) => {

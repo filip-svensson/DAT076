@@ -4,11 +4,12 @@ import axios from "axios";
 
 import { IPost } from "../utilities/interfaces";
 import { NavLink } from "react-router-dom";
+import Rating from '@mui/material/Rating';
 
-export default function PostCard({id, author, title, reviews} : IPost) {
+export default function PostCard({_id, author, title, reviews} : IPost) {
   const [authorName, setAuthorName] = useState<string>();
+  
   async function getAuthorName() {
-    if (id == null) { setAuthorName("Unavailable"); return; }
     try {
       const response = await axios.get(`http://localhost:8080/user/username/${author}`)
       setAuthorName(response.data);
@@ -19,9 +20,17 @@ export default function PostCard({id, author, title, reviews} : IPost) {
   useEffect(() => {
     getAuthorName();
   }, [])
+
+  
+  function averageReviews() : number | undefined{
+    if(reviews.length === 0) {return 0};
+    const sum = reviews.map(review => review.rating).reduce((sum, rating) => sum + rating);
+    return sum / reviews.length;
+  }
+  
  
   return (
-    <NavLink to={`/forum/post/${id}`} className="text-decoration-none text-black">
+    <NavLink to={`/forum/post/${_id}`} className="text-decoration-none text-black">
       <Card className="p-0 bg-light">
         <Card.Img
           variant="top"
@@ -30,7 +39,11 @@ export default function PostCard({id, author, title, reviews} : IPost) {
         />
         <Card.Body>
           <Card.Title>{title}</Card.Title>
-          <Card.Text style={{fontSize:"11pt"}}>{`Written by ${authorName}`}</Card.Text>
+          <Card.Text className="m-0" style={{fontSize:"11pt"}}>{`Written by ${authorName}`}</Card.Text>
+          <div className="d-flex flex-row">
+          <Rating className="" name="avgRating" value={averageReviews()} precision={0.1} readOnly/>
+          ({reviews.length})
+          </div>
         </Card.Body>
       </Card>
     </NavLink>

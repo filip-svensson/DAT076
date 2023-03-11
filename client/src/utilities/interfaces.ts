@@ -14,7 +14,6 @@ export interface IReview {
 }
 
 export interface IReviewCard {
-    postID: string;
     userID: string;
     comment: string;
     rating: number;
@@ -22,7 +21,7 @@ export interface IReviewCard {
 }
 
 export interface IPost {
-    id : string;
+    _id : string;
     author : string;
     title : string;
     description : string;
@@ -31,7 +30,7 @@ export interface IPost {
 }
 
 export interface IUser {
-    id: string;
+    _id: string;
     username: string;
     password: string;
     favouritePosts: IPost[];

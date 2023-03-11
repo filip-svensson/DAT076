@@ -1,3 +1,6 @@
+import { ObjectId } from "mongoose";
+
+
 export interface IReview {
     userID: string;
     comment: string;
@@ -7,12 +10,12 @@ export interface IReview {
 
 export class Review {
 
-    userID: string;
+    userID: ObjectId;
     comment: string;
     rating: number;
     date: number;
     
-    constructor (userID : string, comment : string, rating: number) {
+    constructor (userID : ObjectId, comment : string, rating: number) {
         this.userID = userID;
         this.comment = comment;
         this.rating = rating;

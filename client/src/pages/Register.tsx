@@ -21,8 +21,8 @@ export default function Register() {
     setPasswordError("");
     setConfirmPasswordError("");
     // username validation
-    if (username.length <= 5 || 15 <= username.length) {
-      setUsernameError("Username has to be longer than 5 and shorter than 15 characters!")
+    if (username.length <= 3 || 15 <= username.length) {
+      setUsernameError("Username has to be longer than 3 and shorter than 15 characters!")
       hasError = true;
     }
     if (!validator.matches(username,"^[a-zA-Z0-9]*$")) {

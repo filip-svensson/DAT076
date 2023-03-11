@@ -44,6 +44,42 @@ userRouter.post("/", async (
     }
 })
 
+
+type UserFavoriteRequest = Request & {
+    body: {
+        postID : string
+    }
+    session: {
+        user ?: IUser
+    }
+}
+
+userRouter.post("/favourite", async (
+    req : UserFavoriteRequest,
+    res: Response<string>
+) => {
+    try {
+        const {postID} = req.body;
+        const user = req.session.user;
+
+        if (user == null) {
+            res.status(401).send("Not logged in");
+            return;
+        }
+        if (typeof(postID) !== "string") {
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- postID has type ${typeof(postID)}`);
+            return;
+        }
+        
+        const result = await userService.addUserFavourites(user, postID);
+        res.status(200).send("Favourite maybe added");
+        //TODO FIX
+
+    } catch (err : any){
+        res.status(500).send(err.message);
+    }
+})
+
 userRouter.post("/login", async (
     req: UserRequest,
     res: Response<IUser | string>
@@ -75,6 +111,7 @@ type UserRequestLogout = Request & {
         user ?: IUser
     }
 }
+
 userRouter.post("/logout", async (
     req: UserRequestLogout,
     res: Response<string>
