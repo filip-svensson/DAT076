@@ -5,6 +5,7 @@ import { makeUserService } from "../service/User";
 import { IPost } from "../model/Post"
 import { IRecipeEntry } from "../model/RecipeEntry";
 import { IUser } from "../model/User";
+import { IncomingHttpHeaders } from "http";
 
 const postService = makePostService();
 const userService = makeUserService();
@@ -113,6 +114,86 @@ postRouter.post("/review", async (
         res.status(500).send(err.message);
     }
 })
+
+
+
+
+type ReviewDeleteRequest = Request & {
+    body: {
+        postID : string,
+    }
+    session: {
+        user ?: IUser
+    }
+}
+//TODO COMMENT
+postRouter.delete("/review", async (
+    req: ReviewDeleteRequest,
+    res: Response<String>
+) => {
+    try {
+        const {postID} = req.body;
+        const user = req.session.user;
+
+        if (user == null) {
+            res.status(401).send("Not logged in");
+            return;
+        }
+        if (typeof(postID) !== "string") {
+            res.status(400).send(`Bad DELETE call to ${req.originalUrl} --- postID has type ${typeof(postID)}`);
+            return;
+        }
+        const hasReviewed = await postService.findReview(postID, user.id);
+        if(!hasReviewed){
+            res.status(409).send(`Bad DELETE call to ${req.originalUrl} --- user has not reviewed this post`);
+            return;
+        }
+        const reviewDeleted = await postService.removeReview(postID, user.id);
+        if(reviewDeleted){
+            res.status(204).send(`Review by ${user.id} has been deleted successfully.`);
+            return;
+        }
+        res.status(500).send(`Something went wrong trying to delete the review by ${user.id}`)
+
+    } catch (err : any) {
+        res.status(500).send(err.message);
+    }
+})
+
+
+//TODO COMMENT
+type UserReviewed = Request & {
+    headers: {
+        postid?: string,
+    }
+    session: {
+        user ?: IUser
+    }
+}
+postRouter.get("/review", async(
+    req: UserReviewed, 
+    res: Response<String | Boolean>
+) => {
+    try {
+        const postID = req.headers['postid'];
+        const user = req.session.user;
+
+        if (user == null) {
+            res.status(401).send("Not logged in");
+            return;
+        }
+        if (typeof(postID) !== "string") {
+            res.status(400).send(`Bad GET call to ${req.originalUrl} --- postID header has type ${typeof(postID)}`);
+            return;
+        }
+        const hasReviewed = await postService.findReview(postID, user.id);
+        res.status(200).send(hasReviewed);
+    } catch (err : any){
+        res.status(500).send(err.message);
+    }
+});
+
+
 
 
 

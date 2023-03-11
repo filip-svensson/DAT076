@@ -101,10 +101,11 @@ class PostService implements IPostService {
      * @returns true if the user made a review, false if not or if post doesnt exists
      */
     async findReview(postID: string, userID: string): Promise<Boolean>{
-        const res = await postModel.findOne({postID:postID, reviews:{userID:userID}});
-        console.log(`Resultat av findReview: ${res}`);
+        const res = await postModel.findOne({postID:postID, reviews:{$elemMatch: {userID:userID}}});
+        if(res == null){
+            return false;
+        }
         return true;
-
     }
  
     

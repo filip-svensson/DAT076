@@ -6,12 +6,13 @@ export interface IReview {
 }
 
 export class Review {
+
     userID: string;
     comment: string;
     rating: number;
     date: number;
     
-    constructor ( userID : string, comment : string, rating: number) {
+    constructor (userID : string, comment : string, rating: number) {
         this.userID = userID;
         this.comment = comment;
         this.rating = rating;

@@ -12,6 +12,15 @@ export interface IReview {
     rating: number;
     date: number;
 }
+
+export interface IReviewCard {
+    postID: string;
+    userID: string;
+    comment: string;
+    rating: number;
+    date: number;
+}
+
 export interface IPost {
     id : string;
     author : string;
