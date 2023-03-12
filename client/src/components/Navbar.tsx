@@ -29,7 +29,7 @@ export default function Navbar () {
       const response = await axios.post("http://localhost:8080/user/logout");
       setUser(undefined);
       localStorage.clear();
-      navigate("/");
+      navigate("/login");
     } catch (err: any) {
       console.log(err);
     }

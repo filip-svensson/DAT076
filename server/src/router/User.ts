@@ -139,18 +139,19 @@ userRouter.post("/favourite", async (
             res.status(400).send(`Bad POST call to ${req.originalUrl} --- postID has type ${typeof(postID)}`);
             return;
         }
-        const result = await userService.addUserFavourites(user._id.toString(), postID);
-        res.status(200).send("Favourite maybe added");
-        //TODO FIX
-
+        const result = await userService.addUserFavourite(user._id, postID);
+        if (!result) {
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- post is already a favourite`);
+            return;
+        }
+        res.status(200).send(`PostID ${postID} added as a favourite for user ${user.username}`);
     } catch (err : any){
         res.status(500).send(err.message);
     }
-})
+});
+
+
 type UserFavoriteGetRequest = Request & {
-    body: {
-        postID : string
-    }
     session: {
         user ?: IUser
     }
@@ -166,15 +167,48 @@ userRouter.get("/favourite", async (
             res.status(401).send("Not logged in");
             return;
         }
-        const favouritePosts = await userService.getUserFavourites(user._id.toString());
+        const favouritePosts = await userService.getUserFavourites(user._id);
         if (favouritePosts == null) {
             res.status(404).send(`Bad GET call to ${req.originalUrl} --- no favourite posts`);
             return;
         }
         res.status(200).send(favouritePosts);
-        //TODO FIX
 
     } catch (err : any){
         res.status(500).send(err.message);
     }
 })
+
+type UserFavouriteDeleteRequest = Request & {
+    body : {
+        postID : string
+    }
+    session: {
+        user ?: IUser
+    }
+}
+
+userRouter.delete("/favourite", async (
+    req : UserFavouriteDeleteRequest,
+    res: Response<IPost[] | string>
+) => {
+    try {
+        const {postID} = req.body;
+        const user = req.session.user;
+
+        if (user == null) {
+            res.status(401).send("Not logged in");
+            return;
+        }
+        const result = await userService.removeUserFavourite(user._id, postID);
+        if (!result) {
+            res.status(404).send(`Bad DELETE call to ${req.originalUrl} --- no favourite post to delete`);
+            return;
+        }
+        res.status(200).send(`PostID ${postID} has been removed from ${user.username}s favourites.`);
+
+    } catch (err : any){
+        res.status(500).send(err.message);
+    }
+})
+

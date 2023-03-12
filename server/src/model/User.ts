@@ -2,19 +2,19 @@ import { ObjectId } from "mongoose";
 import { Post } from "./Post";
 
 export interface IUser {
-    _id: ObjectId;
+    _id: string;
     username: string;
     password: string;
-    favouritePosts: ObjectId[];
+    favouritePosts: string[];
 }
 
 export class User implements IUser {
-    _id: ObjectId;
+    _id: string;
     username: string;
     password: string;
-    favouritePosts: ObjectId[];
+    favouritePosts: string[];
 
-    constructor(_id: ObjectId, username: string, password: string) {
+    constructor(_id: string, username: string, password: string) {
         this._id = _id;
         this.username = username;
         this.password = password;

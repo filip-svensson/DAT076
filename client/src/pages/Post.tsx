@@ -11,6 +11,7 @@ import ReviewCard from "../components/ReviewCard";
 import { IPost , IUser} from "../utilities/interfaces";
 
 
+
 export default function Post() {
   const { id } = useParams();
   const [post, setPost] = useState<IPost>();
@@ -18,9 +19,7 @@ export default function Post() {
   const [newComment, setNewComment] = useState<string>("");
   const [rating, setRating] = useState<number | null>();
   const [user, setUser] = useState<IUser>();
-
-  console.log("--- CONSOLE LOG IN POST ---");
-  console.log(user);
+  const [userFavourites, setUserFavourites] = useState<IPost[]>([]);
 
   async function getPost() {
     try {
@@ -39,17 +38,31 @@ export default function Post() {
       console.log(`Error message: ${err.message}`);
     }
   }
+
+  async function getUserFavourites(){
+    if(post == null) return;
+    try {
+      const posts = await axios.get("http://localhost:8080/user/favourite");
+      setUserFavourites(posts.data);
+    } catch (err: any) {
+      console.log(`Did you start the server? error message: ${err.message}`);
+    }
+  }
+
   useEffect(() => {
     getPost();
     const loggedInUser = localStorage.getItem("user");
     if (loggedInUser) {
       const foundUser = JSON.parse(loggedInUser);
       setUser(foundUser);
+      
     }
   }, []);
   useEffect(() => {
     getAuthorName();
+    getUserFavourites();
   }, [post]);
+  
   
 
   async function trySubmit(){
@@ -74,7 +87,7 @@ export default function Post() {
   }
 
 
-  function averageReviews() : number | undefined{
+  function averageReviews() : number | undefined {
     if(post?.reviews.length === 0 || post == null) {return 0};
     const sum = post?.reviews.map(review => review.rating).reduce((sum, rating) => sum + rating);
     return sum / post.reviews.length;
@@ -87,8 +100,30 @@ export default function Post() {
     totalReviews = "1 review";
   }
 
-  
-  function typeOfCard() {
+  async function addFavourite() {
+    if (post == null) return;
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/user/favourite",
+        {postID: id}
+      );
+      getUserFavourites();
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  }
+  async function removeFavourite() {
+    try {
+      const response = await axios.delete(
+        "http://localhost:8080/user/favourite",
+        {data : {postID : id}}
+      );
+      getUserFavourites();
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  }
+  function typeOfCard() { // Card for comment section
     const hasReviewed = post?.reviews.find(review => review.userID === user?._id);
     if(user == null) {  // Not signed in
       return (
@@ -149,27 +184,6 @@ export default function Post() {
         </Card>
     )
   }
-  async function addFavourite() {
-    if (post == null) return;
-    try {
-      const response = await axios.post(
-        "http://localhost:8080/user/favourite",
-        {postID: post._id}
-      )
-    } catch (error: any) {
-      console.log(error.message);
-    }
-  }
-  async function removeFavourite() {
-    try {
-      const response = await axios.get(
-        "http://localhost:8080/user/favourite"
-      )
-      console.log(response.data)
-    } catch (error: any) {
-      console.log(error.message);
-    }
-  }
 
   return (
     <div className="bg-static-gradient d-flex flex-column gap-2" style={{minHeight:"100vh"}}>
@@ -183,16 +197,23 @@ export default function Post() {
               <Rating className="mx-2" name="avgRating" value={averageReviews()} precision={0.1} readOnly/>
               <span>({totalReviews})</span>
               { <div className="ms-auto">
-                {/* {user?.favouritePosts.find(favouritePost => favouritePost._id === post?._id) */ true ? 
-                  <button onClick={ async (e) => {
-                    e.preventDefault();
-                    removeFavourite();
-                  }}>Favourite</button>
+                
+                { userFavourites?.find(favourite => favourite._id === post?._id) ? 
+                  <button className="border-0 bg-transparent shadow-none" onClick= {(e) => {
+                      e.preventDefault();
+                      removeFavourite();
+                    }}>
+                    <span className="p-2">Remove from favourites</span>
+                    <AiFillHeart color="red" size="40"/>
+                  </button>
                   :
-                  <button onClick={ async (e) => {
-                    e.preventDefault();
-                    addFavourite();
-                  }}>Not Favourite</button>
+                  <button className="border-0 bg-transparent shadow-none" onClick= {(e) => {
+                      e.preventDefault();
+                      addFavourite();
+                    }}>
+                    <span className="p-2">Add to favourites</span>
+                    <AiOutlineHeart color="red" size="40"/>
+                  </button>
                 }
               </div> }
             </div>

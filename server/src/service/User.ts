@@ -10,7 +10,9 @@ export interface IUserService {
     createUser(username: string, password: string, id ?: string): Promise<boolean>;
     findUser(username: string, password: string): Promise<IUser | null>;
     findUsername(id: string): Promise<string | undefined>;
-    addUserFavourites(userID : string, postID : string): Promise<boolean>
+    addUserFavourite(userID : string, postID : string): Promise<boolean>;
+    getUserFavourites(userID : string): Promise<IPost[] | null>;
+    removeUserFavourite(userID : string, postID : string) : Promise<boolean> ;
 }
 
 
@@ -65,7 +67,7 @@ class UserService implements IUserService {
      * @param postID ID of the post being added to favourites of user
      * @returns true if a new favourite was added, false if nothing was changed
      */
-    async addUserFavourites(userID : string, postID : string): Promise<boolean> {
+    async addUserFavourite(userID : string, postID : string): Promise<boolean> {
         const response = await userModel.updateOne({_id: userID}, {$addToSet : {favouritePosts : postID}});
         if (response.modifiedCount === 0) return false;
         return true;
@@ -73,8 +75,15 @@ class UserService implements IUserService {
 
     async getUserFavourites(userID : string): Promise<IPost[] | null> {
         const favourites = await userModel.findById(userID, "favouritePosts");
-        const favouritePosts : IPost[] | null = await postModel.findById(favourites);
+        const favouritePosts : IPost[] | null = await postModel.find({_id : { $in : favourites?.favouritePosts}});
         return favouritePosts;
+    }
+
+    async removeUserFavourite(userID : string, postID : string) : Promise<boolean> {
+        const response = await userModel.updateOne({_id: userID}, {$pull: {favouritePosts: postID}});
+        if(response.modifiedCount === 0) return false;
+        return true;
+        
     }
    
 

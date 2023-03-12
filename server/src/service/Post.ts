@@ -5,9 +5,8 @@ import { RecipeEntry } from "../model/RecipeEntry";
 import { postModel } from '../../db/Post.db';
 
 import { Review } from '../model/Review';
-import { ObjectId } from 'mongodb';
 import { IUser } from "../model/User";
-import { Schema } from "mongoose";
+import { Mongoose, Schema } from "mongoose";
 
 
 interface IPostService {
@@ -48,7 +47,7 @@ class PostService implements IPostService {
      * @returns the post or undefined if it doesn't exists
      */
     async getPost(postID: string): Promise<IPost | null> {
-        const post : IPost | null = await postModel.findOne({_id: new ObjectId(postID)});
+        const post : IPost | null = await postModel.findOne({_id: postID});
         return post;
     }
     /**
@@ -69,13 +68,6 @@ class PostService implements IPostService {
     }
 
     
-    async getUserFavourites(user : IUser) : Promise<IPost[]> {
-        const userFavs = user.favouritePosts;
-        const favourites = await postModel.find({_id : {$in : {userFavs}}})
-        return favourites;
-    }
-    
-    
 
 
     /**
@@ -87,7 +79,7 @@ class PostService implements IPostService {
      * @returns true if successfully added, false if not
      */
     async addReview(postID: string, userID: string, comment: string, rating: number): Promise<boolean> {
-        const review = new Review(new ObjectId(userID), comment, rating);
+        const review = new Review(userID, comment, rating);
         const res = await postModel.updateOne({_id:postID}, {$push : {reviews : review}})
         if (!res.acknowledged) return false; 
         return true;
