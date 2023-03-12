@@ -169,22 +169,7 @@ type UserFavouritesRequest = Request & {
 }
 
 
-postRouter.get("/favourites", async (
-    req:  UserFavouritesRequest,
-    res:  Response<IPost[] | String>
-) => {
-    try {
-        const user = req.session.user;
-        if (user == null) {
-            res.status(401).send("Not logged in");
-            return;
-        }
-        const posts = await postService.getUserFavourites(user);
-        res.status(200).send(posts);
-    } catch (err: any) {
-        res.status(500).send(err.message);
-    }
-})
+
 
 /**
  * Get request for all posts
