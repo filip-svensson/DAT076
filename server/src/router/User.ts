@@ -1,5 +1,6 @@
 import express, {Request, Response} from "express";
 import { makeUserService } from "../service/User";
+import validator from "validator";
 
 import { IUser } from "../model/User";
 import { IPost } from "../model/Post";
@@ -36,11 +37,25 @@ userRouter.post("/", async (
             return;
         }
         if (typeof(password) !== "string") {
-            res.status(400).send(`Bad POST passwordcall to ${req.originalUrl} --- password has type ${typeof(password)}`)
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- password has type ${typeof(password)}`)
             return;
         }
-        // TODO: Requirements for username and password (length, characters, etc..)
-        
+        if (username.length <= 3 || 15 <= username.length) {
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- username has to be between 4-14 in length`)
+            return;
+        }
+        if (!validator.matches(username,"^[a-zA-Z0-9]*$")) {
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- username may only use characters: ^[a-zA-Z0-9]*$`)
+            return;
+        }
+        if (password.length <= 7 || 15 <= password.length) {
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- password has to be between 8-14 in length`)
+            return;
+        }
+        if (!validator.matches(password, "^[a-zA-Z0-9]*$")) {
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- password may only use characters: ^[a-zA-Z0-9]*$`)
+            return;
+        }
         const newUser = await userService.createUser(username, password, "");
         if (!newUser) {
             res.status(409).send(`User with username ${username} already exists`);
