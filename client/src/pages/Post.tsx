@@ -13,6 +13,9 @@ import { IPost , IUser} from "../utilities/interfaces";
 
 
 export default function Post() {
+
+
+
   const { id } = useParams();
   const [post, setPost] = useState<IPost>();
   const [authorName, setAuthorName] = useState<string>();
@@ -198,22 +201,24 @@ export default function Post() {
               <span>({totalReviews})</span>
               { <div className="ms-auto">
                 
-                { userFavourites?.find(favourite => favourite._id === post?._id) ? 
-                  <button className="border-0 bg-transparent shadow-none" onClick= {(e) => {
-                      e.preventDefault();
-                      removeFavourite();
-                    }}>
-                    <span className="p-2">Remove from favourites</span>
-                    <AiFillHeart color="red" size="40"/>
-                  </button>
-                  :
-                  <button className="border-0 bg-transparent shadow-none" onClick= {(e) => {
-                      e.preventDefault();
-                      addFavourite();
-                    }}>
-                    <span className="p-2">Add to favourites</span>
-                    <AiOutlineHeart color="red" size="40"/>
-                  </button>
+                { user ? //Is the post viewed by a signed in user? If not, just show empty div
+                    userFavourites?.find(favourite => favourite._id === post?._id) ? //If so, check wether this is one of their favourites or not
+                      <button className="border-0 bg-transparent shadow-none" onClick= {(e) => {
+                        e.preventDefault();
+                        removeFavourite();
+                      }}>
+                      <span className="p-2">Remove from favourites</span>
+                      <AiFillHeart color="red" size="40"/>
+                      </button>
+                    :
+                      <button className="border-0 bg-transparent shadow-none" onClick= {(e) => {
+                        e.preventDefault();
+                        addFavourite();
+                      }}>
+                      <span className="p-2">Add to favourites</span>
+                      <AiOutlineHeart color="red" size="40"/>
+                    </button>
+                  : <div/>
                 }
               </div> }
             </div>
