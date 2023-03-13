@@ -1,51 +1,39 @@
 import * as SuperTest from "supertest";
-import { userRouter } from "./User";
 import {User} from "../model/User";
 import { v4 as uuidv4 } from 'uuid';
+import {app} from "../start";
 
-const request = SuperTest.default(userRouter);
+const request = SuperTest.default(app);
+const session = require("supertest-session");
 
+const testSession = session(app);
 
-/**
- * Test for userRouter.
- * Makes user, finds the user and tests login/logout.
- */
-test("Make/find/login user - Test", async () => {
-    const UserId = uuidv4();
-    const uName = "bobbyboy"
-    const uPass = "bobbyspassword123"
-    
-    const first = await request.post("/").send({
-        body: {
-            username: uName,
-            password: uPass,
-        }
-    });
-    
-    expect(first.statusCode).toEqual(201);
-    expect((first.body.username === uName)).toBeTruthy();
-    expect((first.body.password === uPass)).toBeTruthy();
-    
-
-    const second = await request.get("/username/${UserId}");  //Unsure how to call this correctly
-    expect(second.statusCode).toEqual(200);
-    expect((second.body.map((user : User) => user.username)).toContain(uName));
-    
-    
-    const third = await request.post("/login").send({
-        body: {
-            username: uName,
-            password: uPass
-        }
-    })
-    
-    expect(third.statusCode).toEqual(200);                  //Can only see if statuscode okay. Can't see session.user
-    expect(third.body.username === uName).toBeTruthy();
-    expect(third.body.password === uPass).toBeTruthy();
+const uName = "apa16"
+const uPass = "bobbyspassword123"
+const user  = new User("123", uName, uPass);
 
 
-    const fourth = await request.post("/logout").send({     //Unsure if it requires session to be send with 
-    })
-    
-    expect(fourth.statusCode).toEqual(200);                  //Can only see if statuscode okay. Can't see session.user
-    })
+
+
+test("Sessiontest2", async () => {
+    await testSession.post("/user").send({
+        username: uName,
+        password: uPass,
+        user: user
+    }).expect(201);
+
+    await testSession.post("/user/login").send({
+        username: uName,
+        password: uPass,
+        user : user
+    }).expect(200);
+
+    await testSession.post("/user/logout").send({
+        username: uName,
+        password: uPass,
+        user : user
+    }).expect(200);
+
+
+
+});

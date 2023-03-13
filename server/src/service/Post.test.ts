@@ -21,7 +21,7 @@ recipes.push(recipeEntry);
 const testService = makePostService();
 await testService.createPost(author, title, description, recipes);
 
-const posts = await testService.getPosts();
+ const posts = await testService.getPosts();
 
 expect(posts.some((post) => post.recipeEntries === recipes)).toBeTruthy();
 
