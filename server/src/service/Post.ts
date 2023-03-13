@@ -1,12 +1,8 @@
 
-
-import { IPost, Post } from "../model/Post";
+import { IPost} from "../model/Post";
 import { RecipeEntry } from "../model/RecipeEntry";
 import { postModel } from '../../db/Post.db';
-
 import { Review } from '../model/Review';
-import { IUser } from "../model/User";
-import { Mongoose, Schema } from "mongoose";
 
 
 interface IPostService {
@@ -30,7 +26,6 @@ class PostService implements IPostService {
      * @returns the newly created post
      */
     async createPost(author: string, title: string, description: string, recipeEntries: RecipeEntry[]): Promise<IPost> {
-        
         const newPost = await postModel.create({
             author: author,
             title: title,
@@ -66,9 +61,6 @@ class PostService implements IPostService {
     async getUserPosts(userID : string): Promise<IPost[]> {
         return await postModel.find({"author":userID});
     }
-
-    
-
 
     /**
      * Adds a users review to a post
@@ -112,9 +104,6 @@ class PostService implements IPostService {
         }
         return true;
     }
- 
-    
-
 }
 
 export function makePostService() : PostService {

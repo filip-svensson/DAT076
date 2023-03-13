@@ -9,7 +9,7 @@ import { userRouter } from "./router/User";
 export const app = express();
 
 app.use(session({
-    secret: "Your secret key", // TODO Move to separate file. DO NOT UPLOAD TO GITHUB
+    secret: "Your secret key", // TODO: Move to separate file. DO NOT UPLOAD TO GITHUB, we dont care about security
     resave: false,
     saveUninitialized: true
 }));

@@ -2,13 +2,17 @@
 import Rating from '@mui/material/Rating';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { IReviewCard, IUser } from '../utilities/interfaces';
+import { IReview } from '../utilities/interfaces';
 
 
-export default function ReviewCard({userID, comment, rating, date} : IReviewCard) {
+export default function ReviewCard({userID, comment, rating, date} : IReview) {
 
     const [author, setAuthor] = useState<string>("Not available");
     const createdDate = new Date(date).toLocaleString();
+
+    useEffect(() => {
+        updateAuthor();
+    }, []);
 
     async function updateAuthor() {
         try {
@@ -18,11 +22,6 @@ export default function ReviewCard({userID, comment, rating, date} : IReviewCard
             console.log(`Error message: ${err.message}`);
         }
     }
-
-    useEffect(() => {
-        updateAuthor();
-      
-    }, [])
 
     return (
         <div className='border border-black rounded-2 p-2'>

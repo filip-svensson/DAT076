@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Card, Container, ListGroup, Button, Form, Row } from "react-bootstrap";
+import { Card, Container, ListGroup, Button, Form} from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { AiFillHeart, AiOutlineHeart} from "react-icons/ai"
 
@@ -13,8 +13,6 @@ import { IPost , IUser} from "../utilities/interfaces";
 
 
 export default function Post() {
-
-
 
   const { id } = useParams();
   const [post, setPost] = useState<IPost>();
@@ -58,20 +56,19 @@ export default function Post() {
     if (loggedInUser) {
       const foundUser = JSON.parse(loggedInUser);
       setUser(foundUser);
-      
     }
+    
   }, []);
+
   useEffect(() => {
     getAuthorName();
     getUserFavourites();
   }, [post]);
-  
-  
 
-  async function trySubmit(){
+  async function submit(){
     try {
       const review = {postID: id, comment : newComment, rating : rating};
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:8080/post/review",
           review
       );
@@ -89,7 +86,6 @@ export default function Post() {
     }
   }
 
-
   function averageReviews() : number | undefined {
     if(post?.reviews.length === 0 || post == null) {return 0};
     const sum = post?.reviews.map(review => review.rating).reduce((sum, rating) => sum + rating);
@@ -97,16 +93,16 @@ export default function Post() {
   }
  
   var totalReviews : string = `${post?.reviews.length} reviews`;
-  if(post?.reviews.length == 0){
+  if(post?.reviews.length === 0){
     totalReviews = "No reviews";
-  } else if (post?.reviews.length == 1){
+  } else if (post?.reviews.length === 1){
     totalReviews = "1 review";
   }
 
   async function addFavourite() {
     if (post == null) return;
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:8080/user/favourite",
         {postID: id}
       );
@@ -115,9 +111,10 @@ export default function Post() {
       console.log(error.message);
     }
   }
+
   async function removeFavourite() {
     try {
-      const response = await axios.delete(
+      await axios.delete(
         "http://localhost:8080/user/favourite",
         {data : {postID : id}}
       );
@@ -126,6 +123,7 @@ export default function Post() {
       console.log(error.message);
     }
   }
+
   function typeOfCard() { // Card for comment section
     const hasReviewed = post?.reviews.find(review => review.userID === user?._id);
     if(user == null) {  // Not signed in
@@ -150,19 +148,17 @@ export default function Post() {
                 DELETE
               </Button>
             </Form>
-
-            
         </Card>
       )
     } 
-    return (  // Signed in and has not reviewed yet
+    return (  
       <Card>
           <Form 
             className="container my-1 d-flex flex-column gap-2"
             onSubmit={(e) => {
               e.preventDefault();
               if (rating == null) {alert("Rating required."); return;}
-              trySubmit();
+              submit();
             }}
           >
             <Form.Label className="my-auto">Leave a review:</Form.Label>
@@ -201,8 +197,8 @@ export default function Post() {
               <span>({totalReviews})</span>
               { <div className="ms-auto">
                 
-                { user ? //Is the post viewed by a signed in user? If not, just show empty div
-                    userFavourites?.find(favourite => favourite._id === post?._id) ? //If so, check wether this is one of their favourites or not
+                { user && //Is there a user logged in?
+                    (userFavourites?.find(favourite => favourite._id === post?._id) ? //If so, check wether this is one of their favourites or not
                       <button className="border-0 bg-transparent shadow-none" onClick= {(e) => {
                         e.preventDefault();
                         removeFavourite();
@@ -217,8 +213,7 @@ export default function Post() {
                       }}>
                       <span className="p-2">Add to favourites</span>
                       <AiOutlineHeart color="red" size="40"/>
-                    </button>
-                  : <div/>
+                    </button>)
                 }
               </div> }
             </div>

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 
 export default function Register() {
+  
   const navigate = useNavigate();
   const [username, setUsername] = useState<string>("");
   const [usernameError, setUsernameError] = useState<string>("");
@@ -14,6 +15,8 @@ export default function Register() {
   const [passwordError, setPasswordError] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
+
+
   async function handleSubmit() {
     let hasError = false;
     // Place all validation here
@@ -62,6 +65,7 @@ export default function Register() {
       console.log(`Error message: ${error.message}`)
     }
   }
+
   return (
       <div className="bg-static-gradient d-flex flex-column" style={{minHeight:"100vh"}}>
     <Navbar/>

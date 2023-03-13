@@ -7,8 +7,13 @@ import { NavLink } from "react-router-dom";
 import Rating from '@mui/material/Rating';
 
 export default function PostCard({_id, author, title, reviews} : IPost) {
+
   const [authorName, setAuthorName] = useState<string>();
-  
+
+  useEffect(() => {
+    getAuthorName();
+  }, [])
+
   async function getAuthorName() {
     try {
       const response = await axios.get(`http://localhost:8080/user/username/${author}`)
@@ -17,10 +22,6 @@ export default function PostCard({_id, author, title, reviews} : IPost) {
       console.log(`Error message: ${err.message}`);
     }
   }
-  useEffect(() => {
-    getAuthorName();
-  }, [])
-
   
   function averageReviews() : number | undefined{
     if(reviews.length === 0) {return 0};

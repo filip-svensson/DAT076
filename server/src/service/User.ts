@@ -1,10 +1,7 @@
-import { ObjectId } from 'mongodb';
-import { v4 as uuidv4 } from 'uuid';
 import { postModel } from '../../db/Post.db';
 import { userModel } from '../../db/User.db';
 import { IPost } from '../model/Post';
-
-import { IUser, User } from "../model/User";
+import { IUser } from "../model/User";
 
 export interface IUserService {
     createUser(username: string, password: string, id ?: string): Promise<boolean>;
@@ -14,7 +11,6 @@ export interface IUserService {
     getUserFavourites(userID : string): Promise<IPost[] | null>;
     removeUserFavourite(userID : string, postID : string) : Promise<boolean> ;
 }
-
 
 class UserService implements IUserService {
     
@@ -29,18 +25,16 @@ class UserService implements IUserService {
         if(exists){
             return false;
         }
-        
-        const res = await userModel.create({
+        await userModel.create({
             username : username,
             password : password,
             favouritePosts : [],
         }, function(err : any){
             if(err){return false;}
-            return true;
         });
         return true;
-        
     }
+
     /**
      * Looks for user with same username and password
      * @param username username to look for
@@ -48,9 +42,10 @@ class UserService implements IUserService {
      * @returns the user with the matching username and password | undefined if there is no one
      */
     async findUser(username: string, password: string): Promise<IUser | null> {
-        const user : IUser | null = await userModel.findOne({username:username});
+        const user : IUser | null = await userModel.findOne({username:username, password:password});
         return user;
     }
+
     /**
      * Looks for a user with the given id and returns its username
      * @param id id to look for
@@ -62,9 +57,9 @@ class UserService implements IUserService {
     }
 
     /**
-     * Adds a new favourite post to the user
-     * @param user user of the new favourite to add to
-     * @param postID ID of the post being added to favourites of user
+     * Adds a new favourite post to the user with the given ID
+     * @param userID the id of the user
+     * @param postID the ID of the post
      * @returns true if a new favourite was added, false if nothing was changed
      */
     async addUserFavourite(userID : string, postID : string): Promise<boolean> {
@@ -73,20 +68,29 @@ class UserService implements IUserService {
         return true;
     }
 
+    /**
+     * Gets the favourite posts of the user with the given ID
+     * @param userID the id of the user
+     * @returns a list of Posts
+     */
     async getUserFavourites(userID : string): Promise<IPost[] | null> {
         const favourites = await userModel.findById(userID, "favouritePosts");
         const favouritePosts : IPost[] | null = await postModel.find({_id : { $in : favourites?.favouritePosts}});
         return favouritePosts;
     }
 
+    /**
+     * Removes a favourite with post ID from the user's favourite posts
+     * @param userID the ID of the user
+     * @param postID the ID of the post
+     * @returns true if a favourite post was removed from the user, false if nothing was changed
+     */
     async removeUserFavourite(userID : string, postID : string) : Promise<boolean> {
         const response = await userModel.updateOne({_id: userID}, {$pull: {favouritePosts: postID}});
         if(response.modifiedCount === 0) return false;
         return true;
         
     }
-   
-
 }
 
 export function makeUserService(): UserService {

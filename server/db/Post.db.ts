@@ -1,6 +1,7 @@
-import {Schema, Model} from "mongoose";
+import {Schema} from "mongoose";
 import {conn} from "./conn";
 import { IPost } from "../src/model/Post"
+
 
 const postSchema : Schema = new Schema({
     author : {

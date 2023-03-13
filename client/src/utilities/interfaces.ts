@@ -13,13 +13,6 @@ export interface IReview {
     date: number;
 }
 
-export interface IReviewCard {
-    userID: string;
-    comment: string;
-    rating: number;
-    date: number;
-}
-
 export interface IPost {
     _id : string;
     author : string;

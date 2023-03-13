@@ -2,12 +2,14 @@ import * as SuperTest from "supertest";
 import { postRouter } from "./router/Post";
 import {Post} from "./model/Post";
 import {User} from "./model/User";
+import { app } from "./start";
 import { RecipeEntry } from "./model/RecipeEntry";
 import { Ingredient } from "./model/Ingredient";
 import { v4 as uuidv4 } from 'uuid';
 import e from "cors";
 
-const request = SuperTest.default(postRouter);
+const request = SuperTest.default(app);
+
 
 /**
  * Test for postRouter.

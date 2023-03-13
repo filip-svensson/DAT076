@@ -6,10 +6,12 @@ import axios from "axios";
 import Navbar from "../components/Navbar"
 
 export default function Login() {
+
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
   async function handleSubmit() {
     try {
       const user = {username, password}
@@ -26,6 +28,7 @@ export default function Login() {
       console.log(`Error message: ${error.message}`)
     }
   }
+  
   return (
     <div className="bg-static-gradient d-flex flex-column" style={{minHeight:"100vh"}}>
       <Navbar/>

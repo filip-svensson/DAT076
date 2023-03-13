@@ -1,30 +1,29 @@
 import express, { Request, Response } from "express";
-import { makePostService } from "../service/Post";
-import { makeUserService } from "../service/User";
 
+import { makePostService } from "../service/Post";
 import { IPost } from "../model/Post"
 import { IRecipeEntry } from "../model/RecipeEntry";
 import { IUser } from "../model/User";
 
+
 const postService = makePostService();
-const userService = makeUserService();
 export const postRouter = express.Router();
 
+type SessionRequest = Request & {
+    session: {
+        user ?: IUser
+    }
+}
 
-
-// Request interface for Post
-export type PostRequest = Request & {
+interface PostRequest extends SessionRequest {
     body: {
         title: string,
         description: string,
         recipeEntries: IRecipeEntry[]
     }
-    session: {
-        user ?: IUser
-    }
 }
 /**
- * Post request for a new post
+ * Post request to create a new post
  */
 postRouter.post("/", async (
     req: PostRequest,
@@ -55,14 +54,15 @@ postRouter.post("/", async (
         res.status(500).send(err.message);
     }
 })
-type ReviewRequest = Request & {
+
+
+
+
+interface ReviewRequest extends SessionRequest {
     body: {
         postID: string,
         comment: string
         rating: number
-    }
-    session: {
-        user ?: IUser
     }
 }
 /**
@@ -115,17 +115,14 @@ postRouter.post("/review", async (
 })
 
 
-
-
-type ReviewDeleteRequest = Request & {
+interface ReviewDeleteRequest extends SessionRequest {
     body: {
         postID : string,
     }
-    session: {
-        user ?: IUser
-    }
 }
-//TODO COMMENT
+/**
+ * Deletes a review by session user
+ */
 postRouter.delete("/review", async (
     req: ReviewDeleteRequest,
     res: Response<String>
@@ -158,19 +155,6 @@ postRouter.delete("/review", async (
     }
 })
 
-
-
-
-
-type UserFavouritesRequest = Request & {
-    session : {
-        user ?: IUser
-    }
-}
-
-
-
-
 /**
  * Get request for all posts
  */
@@ -187,7 +171,6 @@ postRouter.get("/all", async (
 })
 /**
  * Get request for all posts from user with specified ID 
- * TODO MAYBE ADD REQ SESSION
  */
 postRouter.get("/all/user/:id/", async (
     req: Request<{id: string},{},{}>,

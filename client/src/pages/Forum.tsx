@@ -8,18 +8,21 @@ import PostCard from "../components/PostCard";
 import { useNavigate } from "react-router-dom";
 
 export default function Forum() {
+
   const navigate = useNavigate();
   const [user, setUser] = useState();
   const [posts, setPosts] = useState<IPost[]>([]);
   const [searchPhrase, setSearchPhrase] = useState("");
+
   async function updatePosts() {
     try {
       const response = await axios.get<IPost[]>("http://localhost:8080/post/all");
       setPosts(response.data);
     } catch (err: any) {
-      console.log(`Did you start the server? error message: ${err.message}`);
+      console.log(`Could not fetch posts; Did you start the server? error message: ${err.message}`);
     }
   }
+
   useEffect(() => {
     updatePosts();
     const loggedInUser = localStorage.getItem("user");
@@ -28,6 +31,7 @@ export default function Forum() {
       setUser(foundUser);
     }
   }, []);
+  
   return (
     <div className="bg-static-gradient" style={{minHeight:"100vh"}}>
       <Navbar/>

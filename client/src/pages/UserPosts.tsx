@@ -6,10 +6,11 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 
-
 export default function UserPosts() {
+  
   const [posts, setPosts] = useState<IPost[]>([]);
   const [user, setUser] = useState<IUser>();
+
   async function fetchPosts() {
     if (user == null) return; // maybe do something else here
     try {
@@ -27,10 +28,12 @@ export default function UserPosts() {
       const foundUser = JSON.parse(loggedInUser);
       setUser(foundUser);
     }
-  }, [])
+  }, []);
+
   useEffect(() => {
     fetchPosts();
-  }, [user])
+  }, [user]);
+
   return (
     <div className="bg-static-gradient" style={{minHeight:"100vh"}}>
       <Navbar/>

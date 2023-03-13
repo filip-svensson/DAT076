@@ -1,4 +1,4 @@
-import {Schema, Model} from "mongoose";
+import {Schema} from "mongoose";
 import {conn} from "./conn";
 import { IUser } from '../src/model/User';
 

@@ -9,16 +9,22 @@ const userService = makeUserService();
 export const userRouter = express.Router();
 
 
-
-type UserRequest = Request & {
-    body: {
-        username: string,
-        password: string
-    }
+type SessionRequest = Request & {
     session: {
         user ?: IUser
     }
 }
+
+interface UserRequest extends SessionRequest {
+    body: {
+        username: string,
+        password: string
+    }
+}
+
+/**
+ * Creates a user
+ */
 userRouter.post("/", async (
     req: UserRequest,
     res: Response<string>
@@ -34,6 +40,7 @@ userRouter.post("/", async (
             return;
         }
         // TODO: Requirements for username and password (length, characters, etc..)
+        
         const newUser = await userService.createUser(username, password, "");
         if (!newUser) {
             res.status(409).send(`User with username ${username} already exists`);
@@ -45,10 +52,9 @@ userRouter.post("/", async (
     }
 })
 
-
-
-
-
+/**
+ * Logs a user into session
+ */
 userRouter.post("/login", async (
     req: UserRequest,
     res: Response<IUser | string>
@@ -75,14 +81,11 @@ userRouter.post("/login", async (
     }
 })
 
-type UserRequestLogout = Request & {
-    session: {
-        user ?: IUser
-    }
-}
-
+/**
+ * Logs out session user
+ */
 userRouter.post("/logout", async (
-    req: UserRequestLogout,
+    req: SessionRequest,
     res: Response<string>
 ) => {
     try {
@@ -97,6 +100,9 @@ userRouter.post("/logout", async (
     }
 })
 
+/**
+ * Get the username associated with :id
+ */
 userRouter.get("/username/:id", async (
     req: Request<{id: string},{},{}>,
     res: Response<string>
@@ -114,15 +120,15 @@ userRouter.get("/username/:id", async (
     }
 })
 
-type UserFavoritePostRequest = Request & {
+interface UserFavoritePostRequest extends SessionRequest {
     body: {
         postID : string
     }
-    session: {
-        user ?: IUser
-    }
 }
 
+/**
+ * Add post to session users favourites
+ */
 userRouter.post("/favourite", async (
     req : UserFavoritePostRequest,
     res: Response<string>
@@ -150,14 +156,11 @@ userRouter.post("/favourite", async (
     }
 });
 
-
-type UserFavoriteGetRequest = Request & {
-    session: {
-        user ?: IUser
-    }
-}
+/**
+ * Get the favourite posts of the session user
+ */
 userRouter.get("/favourite", async (
-    req : UserFavoriteGetRequest,
+    req : SessionRequest,
     res: Response<IPost[] | string>
 ) => {
     try {
@@ -179,15 +182,15 @@ userRouter.get("/favourite", async (
     }
 })
 
-type UserFavouriteDeleteRequest = Request & {
+interface UserFavouriteDeleteRequest extends SessionRequest {
     body : {
         postID : string
     }
-    session: {
-        user ?: IUser
-    }
 }
 
+/**
+ * Removes a post from the session user's favourites
+ */
 userRouter.delete("/favourite", async (
     req : UserFavouriteDeleteRequest,
     res: Response<IPost[] | string>

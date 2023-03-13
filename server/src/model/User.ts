@@ -1,11 +1,9 @@
-import { ObjectId } from "mongoose";
-import { Post } from "./Post";
 
 export interface IUser {
     _id: string;
     username: string;
     password: string;
-    favouritePosts: string[];
+    favouritePosts: string[]; //Array of postIDs
 }
 
 export class User implements IUser {

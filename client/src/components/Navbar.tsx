@@ -9,14 +9,7 @@ export default function Navbar () {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<IUser>();
-  /*
-  const navbarItemsLeft = [
-    {
-      "name": "Forum",
-      "link": "/forum"
-    },
-  ]
-  */
+
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (loggedInUser) {
@@ -24,16 +17,18 @@ export default function Navbar () {
       setUser(foundUser);
     }
   }, []);
+
   async function logout() {
     try {
-      const response = await axios.post("http://localhost:8080/user/logout");
+      await axios.post("http://localhost:8080/user/logout");
       setUser(undefined);
       localStorage.clear();
-      navigate("/login");
+      navigate("/");
     } catch (err: any) {
       console.log(err);
     }
   }
+
   return (
     <BNavbar bg="light" expand="lg">
       <Container fluid>
@@ -58,7 +53,7 @@ export default function Navbar () {
           </Nav.Link>
           { 
             user && 
-            <div className="d-flex"> 
+            <div className="d-flex flex-column flex-lg-row"> 
               <Nav.Link 
               className = {location.pathname === "/myposts" ? "active" : ""} 
               href="/myposts"
@@ -101,7 +96,6 @@ export default function Navbar () {
             </Nav.Link>
             </Nav>
             }
-          
         </BNavbar.Collapse>
       </Container>
     </BNavbar>
