@@ -3,12 +3,8 @@ import {Post} from "../model/Post";
 import { RecipeEntry } from "../model/RecipeEntry";
 import {app} from "../start";
 import { Ingredient } from "../model/Ingredient";
-import { Review } from "../model/Review";
-import { postRouter } from "./Post";
-import { makeUserService } from "../service/User";
 
 const session = require("supertest-session");
-
 const request = session(app);
 
 /**
@@ -19,8 +15,8 @@ const request = session(app);
  */
 test("sessiontest1", async () => {
 
-    const uName = "häst15"
-    const uPass = "bobbyspassword123"
+    const uName = "Person"
+    const uPass = "Password123"
     const user  = new User("123", uName, uPass);
 
     const Title = "Drink";
@@ -30,7 +26,6 @@ test("sessiontest1", async () => {
 
     const Comment = "just Lovely";
     const Rating = 3;
-
 
     var recipeEntry : RecipeEntry[] = new Array<RecipeEntry>
 
@@ -61,7 +56,10 @@ test("sessiontest1", async () => {
     const second = await request.get("/post/all").expect(200);
     expect(second.body.map((post : Post) => post.title === Title)).toBeTruthy();
 
-    const PostID = second.body.forEach((element : Post)=> {  //FIND WAY TO GET POSTID FROM PREVIOUSLY MADE POST ON LINE 51
+    /**
+     * Finds post with same title and extracts id from it
+     */
+    const PostID = second.body.forEach((element : Post)=> {
         if(element.title === Title){
             return element._id;
         }

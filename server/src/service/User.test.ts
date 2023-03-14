@@ -17,7 +17,7 @@ test("Testing to create User", async()=>{
     expect(newUser?.password).toBe(uPass);
 })
 /**
- * Tries to tie user to ID and find through that, rather than uName and uPass
+ * Tries to tie user to ID and find through that, rather than username and password
  */
 test("Testing User with ID", async() => {
     const wrong = "impostor";
@@ -39,12 +39,3 @@ test("Testing User with ID", async() => {
         expect(newUser === wrong).toBeFalsy();}
 
 })
-/*
-test("(Commented out doesnt work)Testing favourite/unfavourite", async() => {
-
-    const id = uuidv4();
-    const uName = "bob";
-    const uPass = "bobrulez";
-    const favouriteId = "12kj33i2-j2i3-ckaw-23fg-12f96kc0";
-    const userId = "23491dwd-2332-gt45-dw34-dvi69do2";
-    const favorites : IPost = [favouriteId];*/

@@ -7,13 +7,13 @@ const session = require("supertest-session");
 
 const testSession = session(app);
 
-const uName = "apa18"
-const uPass = "bobbyspassword123"
+const uName = "Person"
+const uPass = "password123"
 const user  = new User("123", uName, uPass);
 
-
-
-
+/**
+ * Creates a user, Logs user in and then logs user out.
+ */
 test("Sessiontest2", async () => {
     await testSession.post("/user").send({
         user : user,
