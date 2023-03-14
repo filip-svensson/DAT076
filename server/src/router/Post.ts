@@ -37,15 +37,15 @@ postRouter.post("/", async (
             return;
         }
         if (typeof(title) !== "string") {
-            res.status(400).send(`Bad POST call to ${req.originalUrl} --- title has type ${typeof(title)}`)
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- title has type ${typeof(title)}, should be string`)
             return;
         }
         if (typeof(description) !== "string") {
-            res.status(400).send(`Bad POST call to ${req.originalUrl} --- description has type ${typeof(description)}`)
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- description has type ${typeof(description)}, should be string`)
             return;
         }
         if (typeof(recipeEntries) !== "object") {
-            res.status(400).send(`Bad POST call to ${req.originalUrl} --- recipeEntries has type ${typeof(recipeEntries)}`)
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- recipeEntries has type ${typeof(recipeEntries)}, should be object`)
             return; 
         }
         const newPost = await postService.createPost(user._id.toString(), title, description, recipeEntries);
@@ -81,15 +81,15 @@ postRouter.post("/review", async (
             return;
         }
         if (typeof(postID) !== "string") {
-            res.status(400).send(`Bad POST call to ${req.originalUrl} --- postID has type ${typeof(postID)}`);
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- postID has type ${typeof(postID)}, should be string`);
             return;
         }
         if (typeof(comment) !== "string") {
-            res.status(400).send(`Bad POST call to ${req.originalUrl} --- message has type ${typeof(comment)}`);
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- message has type ${typeof(comment)}, should be string`);
             return;
         }
         if (typeof(rating) !== "number") {
-            res.status(400).send(`Bad POST call to ${req.originalUrl} --- rating has type ${typeof(rating)}`);
+            res.status(400).send(`Bad POST call to ${req.originalUrl} --- rating has type ${typeof(rating)}, should be number`);
             return;
         }
         if(![1,2,3,4,5].includes(rating)){
@@ -105,7 +105,7 @@ postRouter.post("/review", async (
 
         const postWithNewReview = await postService.addReview(postID, user._id, comment, rating);
         if (postWithNewReview == null) {
-            res.status(404).send(`No post with index ${postID}`);
+            res.status(404).send(`No post with id ${postID}`);
             return;
         }
         res.status(201).send(`Review added to post ${postID}`)
@@ -136,7 +136,7 @@ postRouter.delete("/review", async (
             return;
         }
         if (typeof(postID) !== "string") {
-            res.status(400).send(`Bad DELETE call to ${req.originalUrl} --- postID has type ${typeof(postID)}`);
+            res.status(400).send(`Bad DELETE call to ${req.originalUrl} --- postID has type ${typeof(postID)}, should be string`);
             return;
         }
         const hasReviewed = await postService.findReview(postID, user._id);
@@ -146,7 +146,7 @@ postRouter.delete("/review", async (
         }
         const reviewDeleted = await postService.removeReview(postID, user._id);
         if(!reviewDeleted){
-            res.status(500).send(`Something went wrong trying to delete the review with ${user._id}`);
+            res.status(500).send(`Something went wrong trying to delete the review by ${user._id}`);
             return;
         }
         res.status(204).send(`Review by ${user._id} has been deleted successfully.`);
@@ -174,9 +174,13 @@ postRouter.get("/all", async (
  */
 postRouter.get("/all/user/:id/", async (
     req: Request<{id: string},{},{}>,
-    res: Response<IPost[]>
+    res: Response<IPost[] | String>
 ) => {
     try {
+        const id = req.params.id; 
+        if(typeof(id) !== "string"){
+            res.status(400).send(`Bad GET request to ${req.originalUrl} --- ID has type ${typeof(id)}, should be string`);
+        }
         const posts = await postService.getUserPosts(req.params.id);
         res.status(200).send(posts);
     } catch (err: any) {
@@ -191,10 +195,13 @@ postRouter.get("/:id", async (
     res: Response<IPost | String>
 ) => {
     try {
-        const { id } = req.params;
+        const id = req.params.id; 
+        if(typeof(id) !== "string"){
+            res.status(400).send(`Bad GET request to ${req.originalUrl} --- ID has type ${typeof(id)}, should be string`);
+        }
         const post = await postService.getPost(id);
         if (post == null) {
-            res.status(404).send(`No post with index ${id}`);
+            res.status(404).send(`No post with id ${id}`);
             return;
         }
         res.status(200).send(post);
